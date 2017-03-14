@@ -1,6 +1,6 @@
 marchio-datastore
 ==
-PUT DESCRIPTION HERE
+REST to Google Datatore Mapper
 --
 
 <p align="left">
@@ -29,6 +29,10 @@ PUT DESCRIPTION HERE
 * * *
 
 ## Usage
+
+This is a new work in progress.
+
+* * *
 
 ## Testing
 
