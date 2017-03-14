@@ -2,7 +2,7 @@
   "name": "marchio-datastore",
   "version": "0.1.0",
   "description": "REST to Google Datastore Mapper",
-  "main": "dist/marchio-datastore.js",
+  "main": "modules/index.js",
   "scripts": {
     "//": "To use: npm start (useful if not a module)",
     "start": "node dist/marchio-datastore.js",
@@ -15,15 +15,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://bitbucket.org/mitchallen/marchio-datastore.git"
-  },
-  "repository": {
-    "type": "git",
     "url": "https://github.com/mitchallen/marchio-datastore.git"
   },
   "author": "Mitch Allen <npm@mitchallen.com> (http://mitchallen.com)",
   "license": "MIT",
   "dependencies": {
+    "@google-cloud/datastore": "^0.7.0",
+    "body-parser": "^1.17.1",
+    "express": "^4.15.2"
   },
   "devDependencies": {
     "babel-preset-es2015": "^6.18.0",

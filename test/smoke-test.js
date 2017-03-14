@@ -12,11 +12,25 @@
 
 var request = require('supertest'),
     should = require('should'),
-    modulePath = "../modules/index";
+    modulePath = "../modules/index",
+    GOOGLE_TEST_PROJECT = process.env.MARCHIO_TEST_GOOGLE_PROJECT,
+    // TEST_PORT = process.env.TEST_PORT || 8080;
+    TEST_PORT = 8080;
 
 describe('module factory smoke test', () => {
 
     var _factory = null;
+
+    var _testModel = {
+        name: 'smoketest',
+        fields: {
+            email:    { type: String, required: true },
+            status:   { type: String, required: true, default: "NEW" },
+            // password: { type: String, select: false },  // select: false, exclude from query results
+            // alpha:    { type: String, required: true, default: "AAA" },
+            // beta :    { type: String, default: "BBB" },
+        }
+    }
 
     before( done => {
         // Call before all tests
@@ -46,7 +60,10 @@ describe('module factory smoke test', () => {
     });
 
     it('create method with no spec should return object', done => {
-        _factory.create()
+        _factory.create({
+                projectId: GOOGLE_TEST_PROJECT,
+                model: _testModel
+            })
         .then(function(obj){
             should.exist(obj);
             done();
@@ -54,21 +71,6 @@ describe('module factory smoke test', () => {
         .catch( function(err) { 
             console.error(err); 
             done(err);  // to pass on err, remove err (done() - no arguments)
-        });
-    });
-
-    it('health method should return ok', done => {
-        _factory.create({})
-        .then(function(obj) {
-            return obj.health();
-        })
-        .then(function(result) {
-            result.should.eql("OK");
-            done();
-        })
-        .catch( function(err) { 
-            console.error(err);
-            done(err); 
         });
     });
 });

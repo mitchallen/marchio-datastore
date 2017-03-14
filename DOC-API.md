@@ -14,38 +14,6 @@
 ## marchio-datastore
 Module
 
-
-* [marchio-datastore](#module_marchio-datastore)
-    * [.package()](#module_marchio-datastore+package)
-    * [.health()](#module_marchio-datastore+health)
-
-<a name="module_marchio-datastore+package"></a>
-
-### marchio-datastore.package()
-Returns the package name
-
-**Kind**: instance method of <code>[marchio-datastore](#module_marchio-datastore)</code>  
-<a name="module_marchio-datastore+health"></a>
-
-### marchio-datastore.health()
-Health check
-
-**Kind**: instance method of <code>[marchio-datastore](#module_marchio-datastore)</code>  
-**Example** *(Usage Example)*  
-```js
-                var factory = require("marchio-datastore");
-             
-                factory.create({})
-                .then(function(obj) {
-                    return obj.health();
-                })
-                .then(function(result) {
-                    console.log("HEALTH: ", result);
-                })
-                .catch( function(err) { 
-                    console.error(err); 
-                });
-```
 <a name="module_marchio-datastore-factory"></a>
 
 ## marchio-datastore-factory
