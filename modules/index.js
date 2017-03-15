@@ -34,7 +34,7 @@ const express = require('express'),
  * @param {Object} spec Named parameters object
  * @param {boolean} spec.post Allow HTTP POST
  * @param {boolean} spec.get Allow HTTP GET
- * @param {boolean} spec.put Allow HTTP PUT (Feature Not Implemented Yet)
+ * @param {boolean} spec.put Allow HTTP PUT
  * @param {boolean} spec.patch Allow HTTP PATCH (Feature Not Implemented Yet)
  * @param {boolean} spec.del Allow HTTP DELETE (Feature Not Implemented Yet)
  * @returns {Promise} that resolves to an expressjs app
@@ -56,7 +56,8 @@ const express = require('express'),
  *     model: _testModel,
  *     projectId: GOOGLE_PROJECT_ID
  *     post: true,
- *     get: true
+ *     get: true,
+ *     put: true
  * })
  * .then(function(app) {
  *     app.listen(PORT, () => {

@@ -66,7 +66,7 @@ It takes one spec parameter that must be an object with named parameters
 | spec | <code>Object</code> | Named parameters object |
 | spec.post | <code>boolean</code> | Allow HTTP POST |
 | spec.get | <code>boolean</code> | Allow HTTP GET |
-| spec.put | <code>boolean</code> | Allow HTTP PUT (Feature Not Implemented Yet) |
+| spec.put | <code>boolean</code> | Allow HTTP PUT |
 | spec.patch | <code>boolean</code> | Allow HTTP PATCH (Feature Not Implemented Yet) |
 | spec.del | <code>boolean</code> | Allow HTTP DELETE (Feature Not Implemented Yet) |
 
@@ -89,7 +89,8 @@ factory.create({
     model: _testModel,
     projectId: GOOGLE_PROJECT_ID
     post: true,
-    get: true
+    get: true,
+    put: true
 })
 .then(function(app) {
     app.listen(PORT, () => {
@@ -147,6 +148,10 @@ Add unit tests for any new or changed functionality. Lint and test your code.
 * * *
 
 ## Version History
+
+#### Version 0.1.3
+
+* Added PUT support
 
 #### Version 0.1.2
 
