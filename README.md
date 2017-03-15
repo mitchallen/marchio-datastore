@@ -1,6 +1,6 @@
 marchio-datastore
 ==
-REST to Google Datatore Mapper
+REST to Google Datastore Mapper
 --
 
 <p align="left">
