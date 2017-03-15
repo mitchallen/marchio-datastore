@@ -19,6 +19,8 @@ function validateParams(model) {
 
         // console.log(`req.params.model: ${req.params.model}`);
 
+        // console.log("CORE-PARAMS:", req.params );
+
         if( req.params.model !== model.name ) {
             eMsg = `### ERROR: '${req.params.model}'' is not a valid database model`;
             console.error(eMsg);

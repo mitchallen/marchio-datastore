@@ -1,5 +1,5 @@
 /**
-    Module: datastore-post.js
+    Module: datastore-put.js
     Author: Mitch Allen
 */
 
@@ -24,7 +24,7 @@ module.exports.create = ( spec ) => {
                 ds = coreObject.ds,
                 router = coreObject.router;
 
-            var saveDB = function(req, res, next) {
+            var updateDB = function(req, res, next) {
 
                 var eMsg = '';
 
@@ -52,15 +52,27 @@ module.exports.create = ( spec ) => {
 
                 // console.log("MODEL NAME: ", model.name );
 
-                // For a PUT operation:
-                // var dbId = parseInt(id,10);
-                // var key = datastore.key( [ model.name, dbId ] );
+                // For a PUT operation
+                // var dbId = req.params.id;    // would go in as 'name' and not 'id' (because it's a string)
+                var dbId = parseInt( req.params.id, 10 );
+                // console.log('ID: ', dbId );
 
-                var key = ds.key( model.name );
+                var key = ds.key( [ model.name, dbId ] );
+
+                // console.log(key);
+
+                // For a POST operation
+                // var key = ds.key( model.name );
+
                 var entity = {
                   key: key,
+                  method: 'update',
+                  // method: 'insert',  // will get already exists - can use in POST
+                  // method: 'upsert',
                   data: record
                 };
+
+                // console.log("ENTITY: ", entity);
 
                 ds.save(entity).then(function(data) {
                     // var apiResponse = data[0];
@@ -78,7 +90,7 @@ module.exports.create = ( spec ) => {
 
                     res
                         .location("/" + key.path.join('/') )  // .location("/" + model + "/" + doc._id)
-                        .status(201)    // Created
+                        .status(204)    // Not returning data
                         .json(record);
 
                 }).catch( function(err) { 
@@ -91,7 +103,7 @@ module.exports.create = ( spec ) => {
                 });
             };
             
-            router.post( '/:model', dsCore.validateParams(model), saveDB );
+            router.put( '/:model/:id', dsCore.validateParams(model), updateDB );
 
             // router.post( '/:model', saveDB );
 

@@ -14,6 +14,7 @@ const express = require('express'),
       bodyParser = require('body-parser'),
       datastore = require('@google-cloud/datastore'),
       postRouter = require('./datastore-post'),
+      putRouter = require('./datastore-put'),
       getRouter = require('./datastore-get');
 
 /**
@@ -110,6 +111,7 @@ module.exports.create = ( spec ) => {
         var routes = [];
 
         if( post ) routes.push( postRouter.create({ projectId: projectId, model: model }));
+        if( put )  routes.push( putRouter.create( { projectId: projectId, model: model }));
         if( get  ) routes.push( getRouter.create( { projectId: projectId, model: model })); 
 
         if(routes.length === 0) {

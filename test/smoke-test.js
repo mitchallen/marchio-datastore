@@ -313,7 +313,7 @@ describe('module factory smoke test', () => {
                     // GET
                     var _recordId = res.body._id; 
                     var _getUrl = `/${_testModel.name}/${_recordId}`;
-                    // console.log(_getUrl);
+                    // console.log("GET URL: ", _getUrl);
                     request(_testHost)
                         .get(_getUrl)
                         .expect(200)
@@ -326,6 +326,81 @@ describe('module factory smoke test', () => {
                             res.body.status.should.eql("NEW");
                             should.exist(res.body._id);
                             done();;
+                        });
+                });
+
+        })
+        .catch( function(err) { 
+            console.error(err); 
+            done(err);  // to pass on err, remove err (done() - no arguments)
+        });
+    });
+
+    it('put should succeed', done => {
+        _factory.create({
+            projectId: GOOGLE_TEST_PROJECT,
+            model: _testModel,
+            post: true,
+            get: true,
+            put: true
+        })
+        .then(function(app) {
+           _server = app.listen(TEST_PORT, () => {
+               // console.log(`listening on port ${TEST_PORT}`);   
+           });
+           killable(_server);
+           return Promise.resolve(true);
+        })
+        .then( () => {
+
+            var testObject = {
+                email: "testput" + getRandomInt( 1000, 1000000) + "@smoketest.cloud",
+            };
+
+            // console.log(`TEST HOST: ${_testHost} `);
+
+            // SETUP - need to post at least one record
+            request(_testHost)
+                .post(_postUrl)
+                .send(testObject)
+                .set('Content-Type', 'application/json')
+                .expect(201)
+                .end(function (err, res) {
+                    should.not.exist(err);
+                    should.exist(res);
+                    should.not.exist(err);
+                    // console.log(res.body);
+                    res.body.email.should.eql(testObject.email);
+                    res.body.status.should.eql("NEW");
+                    should.exist(res.body._id);
+                    // GET
+                    var _recordId = res.body._id; 
+                    var _putUrl = `/${_testModel.name}/${_recordId}`;
+                    // console.log("PUT URL: ", _putUrl);
+                    request(_testHost)
+                        .put(_putUrl)
+                        .send({ email: testObject.email, status: "UPDATED" })
+                        // .send({ status: "UPDATED" })
+                        .set('Content-Type', 'application/json')
+                        .expect(204)    // No content returned
+                        .end(function (err, res) {
+                            should.not.exist(err);
+                            // No content, nothing to verify
+                            var _getUrl = `/${_testModel.name}/${_recordId}`;
+                            // console.log("GET URL: ", _getUrl);
+                            request(_testHost)
+                                .get(_getUrl)
+                                .expect(200)
+                                .end(function (err, res) {
+                                    should.not.exist(err);
+                                    // console.log("RECORD: ", res.body);
+                                    res.body.email.should.eql(testObject.email);
+                                    // // Should not return password
+                                    // should.not.exist(res.body.password);
+                                    res.body.status.should.eql("UPDATED");
+                                    should.exist(res.body._id);
+                                    done();;
+                                });
                         });
                 });
 
