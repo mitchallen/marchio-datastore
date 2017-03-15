@@ -7,6 +7,9 @@
 <dt><a href="#module_marchio-datastore-factory">marchio-datastore-factory</a></dt>
 <dd><p>Factory module</p>
 </dd>
+<dt><a href="#module_marchio-datastore-ERROR">marchio-datastore-ERROR</a></dt>
+<dd><p>Error module</p>
+</dd>
 </dl>
 
 <a name="module_marchio-datastore"></a>
@@ -67,3 +70,25 @@ factory.create({
     console.error(err); 
 });
 ```
+<a name="module_marchio-datastore-ERROR"></a>
+
+## marchio-datastore-ERROR
+Error module
+
+
+* [marchio-datastore-ERROR](#module_marchio-datastore-ERROR)
+    * [.MODEL_MUST_BE_DEFINED](#module_marchio-datastore-ERROR+MODEL_MUST_BE_DEFINED)
+    * [.MODEL_NAME_MUST_BE_DEFINED](#module_marchio-datastore-ERROR+MODEL_NAME_MUST_BE_DEFINED)
+
+<a name="module_marchio-datastore-ERROR+MODEL_MUST_BE_DEFINED"></a>
+
+### marchio-datastore-ERROR.MODEL_MUST_BE_DEFINED
+Model definition error
+
+**Kind**: instance property of <code>[marchio-datastore-ERROR](#module_marchio-datastore-ERROR)</code>  
+<a name="module_marchio-datastore-ERROR+MODEL_NAME_MUST_BE_DEFINED"></a>
+
+### marchio-datastore-ERROR.MODEL_NAME_MUST_BE_DEFINED
+Model name definition error
+
+**Kind**: instance property of <code>[marchio-datastore-ERROR](#module_marchio-datastore-ERROR)</code>  

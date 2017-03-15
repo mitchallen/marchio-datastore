@@ -12,16 +12,23 @@
 
 var request = require('supertest'),
     should = require('should'),
+    killable = require('killable'),
     modulePath = "../modules/index",
     GOOGLE_TEST_PROJECT = process.env.MARCHIO_TEST_GOOGLE_PROJECT,
     TEST_PORT = process.env.MARCHIO_PORT || 8080;
+
+var getRandomInt = function (min, max) {
+    return Math.floor(Math.random() * (max - min + 1) + min);
+};
 
 describe('module factory smoke test', () => {
 
     var _factory = null;
 
+    var _server = null;
+
     var _testModel = {
-        name: 'smoketest',
+        name: 'datastore-test',
         fields: {
             email:    { type: String, required: true },
             status:   { type: String, required: true, default: "NEW" },
@@ -29,7 +36,10 @@ describe('module factory smoke test', () => {
             // alpha:    { type: String, required: true, default: "AAA" },
             // beta :    { type: String, default: "BBB" },
         }
-    }
+    };
+
+    var _testHost = `http://localhost:${TEST_PORT}`;
+    var _postUrl = `/${_testModel.name}`;
 
     before( done => {
         // Call before all tests
@@ -45,11 +55,18 @@ describe('module factory smoke test', () => {
 
     beforeEach( done => {
         // Call before each test
+        _server = null;
         done();
     });
 
     afterEach( done => {
-        // Call after eeach test
+        // Call after each test
+        if( _server ) {
+            _server.close();
+            _server.kill(() => {});
+            _server = null;
+        }
+
         done();
     });
 
@@ -207,6 +224,111 @@ describe('module factory smoke test', () => {
         .then(function(obj){
             should.exist(obj);
             done();
+        })
+        .catch( function(err) { 
+            console.error(err); 
+            done(err);  // to pass on err, remove err (done() - no arguments)
+        });
+    });
+
+    it('post should succeed', done => {
+        _factory.create({
+            projectId: GOOGLE_TEST_PROJECT,
+            model: _testModel,
+            post: true
+        })
+        .then(function(app) {
+           _server = app.listen(TEST_PORT, () => {
+               // console.log(`listening on port ${TEST_PORT}`);   
+           });
+           killable(_server);
+           return Promise.resolve(true);
+        })
+        .then( () => {
+
+            var testObject = {
+                email: "test" + getRandomInt( 1000, 1000000) + "@smoketest.cloud",
+            };
+
+            // console.log(`TEST HOST: ${_testHost} `);
+
+            request(_testHost)
+                .post(_postUrl)
+                .send(testObject)
+                .set('Content-Type', 'application/json')
+                .expect(201)
+                .end(function (err, res) {
+                    should.not.exist(err);
+                    // console.log(res.body);
+                    res.body.email.should.eql(testObject.email);
+                    // // Should not return password
+                    // should.not.exist(res.body.password);
+                    res.body.status.should.eql("NEW");
+                    should.exist(res.body._id);
+                    done();;
+                });
+
+        })
+        .catch( function(err) { 
+            console.error(err); 
+            done(err);  // to pass on err, remove err (done() - no arguments)
+        });
+    });
+
+    it('get should succeed', done => {
+        _factory.create({
+            projectId: GOOGLE_TEST_PROJECT,
+            model: _testModel,
+            post: true
+        })
+        .then(function(app) {
+           _server = app.listen(TEST_PORT, () => {
+               // console.log(`listening on port ${TEST_PORT}`);   
+           });
+           killable(_server);
+           return Promise.resolve(true);
+        })
+        .then( () => {
+
+            var testObject = {
+                email: "test" + getRandomInt( 1000, 1000000) + "@smoketest.cloud",
+            };
+
+            // console.log(`TEST HOST: ${_testHost} `);
+
+            // SETUP - need to post at least one record
+            request(_testHost)
+                .post(_postUrl)
+                .send(testObject)
+                .set('Content-Type', 'application/json')
+                .expect(201)
+                .end(function (err, res) {
+                    should.not.exist(err);
+                    should.exist(res);
+                    should.not.exist(err);
+                    // console.log(res.body);
+                    res.body.email.should.eql(testObject.email);
+                    res.body.status.should.eql("NEW");
+                    should.exist(res.body._id);
+                    // GET
+                    var _recordId = res.body._id; 
+                    var _getUrl = `/${_testModel.name}/${_recordId}`;
+                    // console.log(_getUrl);
+                    request(_testHost)
+                        .get(_getUrl)
+                        .expect(200)
+                        .end(function (err, res) {
+                            should.not.exist(err);
+                            // console.log(res.body);
+                            res.body.email.should.eql(testObject.email);
+                            // // Should not return password
+                            // should.not.exist(res.body.password);
+                            res.body.status.should.eql("NEW");
+                            should.exist(res.body._id);
+                            done();;
+                        });
+                });
+
         })
         .catch( function(err) { 
             console.error(err); 
