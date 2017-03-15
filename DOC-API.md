@@ -31,16 +31,39 @@ It takes one spec parameter that must be an object with named parameters
 | Param | Type | Description |
 | --- | --- | --- |
 | spec | <code>Object</code> | Named parameters object |
+| spec.post | <code>boolean</code> | Allow HTTP POST |
+| spec.get | <code>boolean</code> | Allow HTTP GET |
+| spec.put | <code>boolean</code> | Allow HTTP PUT (Feature Not Implemented Yet) |
+| spec.patch | <code>boolean</code> | Allow HTTP PATCH (Feature Not Implemented Yet) |
+| spec.del | <code>boolean</code> | Allow HTTP DELETE (Feature Not Implemented Yet) |
 
 **Example** *(Usage example)*  
 ```js
-    var factory = require("marchio-datastore");
- 
-    factory.create({})
-    .then(function(obj) {
-        return obj.health();
-    })
-    .catch( function(err) { 
-        console.error(err); 
+var factory = require("marchio-datastore");
+
+const GOOGLE_PROJECT_ID = process.env.MARCHIO_GOOGLE_PROJECT_ID,
+      PORT = process.env.MARCHIO_PORT || 8080;
+
+var _testModel = {
+    name: 'user',
+    fields: {
+        email:    { type: String, required: true },
+        status:   { type: String, required: true, default: "NEW" }
+    }
+};
+
+factory.create({
+    model: _testModel,
+    projectId: GOOGLE_PROJECT_ID
+    post: true,
+    get: true
+})
+.then(function(app) {
+    app.listen(PORT, () => {
+        console.log(`listening on port ${PORT}`);   
     });
+})
+.catch( function(err) { 
+    console.error(err); 
+});
 ```

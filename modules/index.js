@@ -31,18 +31,43 @@ const express = require('express'),
  * Factory method 
  * It takes one spec parameter that must be an object with named parameters
  * @param {Object} spec Named parameters object
+ * @param {boolean} spec.post Allow HTTP POST
+ * @param {boolean} spec.get Allow HTTP GET
+ * @param {boolean} spec.put Allow HTTP PUT (Feature Not Implemented Yet)
+ * @param {boolean} spec.patch Allow HTTP PATCH (Feature Not Implemented Yet)
+ * @param {boolean} spec.del Allow HTTP DELETE (Feature Not Implemented Yet)
  * @returns {Promise} that resolves to {module:marchio-datastore}
  * @example <caption>Usage example</caption>
-    var factory = require("marchio-datastore");
- 
-    factory.create({})
-    .then(function(obj) {
-        return obj.health();
-    })
-    .catch( function(err) { 
-        console.error(err); 
-    });
+ * var factory = require("marchio-datastore");
+ *
+ * const GOOGLE_PROJECT_ID = process.env.MARCHIO_GOOGLE_PROJECT_ID,
+ *       PORT = process.env.MARCHIO_PORT || 8080;
+ *
+ * var _testModel = {
+ *     name: 'user',
+ *     fields: {
+ *         email:    { type: String, required: true },
+ *         status:   { type: String, required: true, default: "NEW" }
+ *     }
+ * };
+ *
+ * factory.create({
+ *     model: _testModel,
+ *     projectId: GOOGLE_PROJECT_ID
+ *     post: true,
+ *     get: true
+ * })
+ * .then(function(app) {
+ *     app.listen(PORT, () => {
+ *         console.log(`listening on port ${PORT}`);   
+ *     });
+ *})
+ * .catch( function(err) { 
+ *     console.error(err); 
+ * });
  */
+
+
 
 module.exports.create = ( spec ) => {
 
@@ -52,18 +77,24 @@ module.exports.create = ( spec ) => {
 
         var model = spec.model,
             projectId = spec.projectId,
-            middleware = spec.use;
+            middleware = spec.use,
+            // Allow HTTP method flags
+            post = spec.post || false,
+            get = spec.get || false,
+            put = spec.put || false,
+            patch = spec.patch || false,
+            del = spec.del || false;
 
         if( ! model ) {
-            reject( new Error(".create: model must be defined"));
+            return reject( new Error(_ERROR.MODEL_MUST_BE_DEFINED));
         }
 
         if( ! model.name ) {
-            reject ( new Error(".create: model.name must be defined"));
+            return reject ( new Error(_ERROR.MODEL_NAME_MUST_BE_DEFINED));
         }
 
         if( ! projectId ) {
-            reject( new Error(".create: projectId must be defined"));
+            return reject( new Error(_ERROR.PROJECT_ID_MUST_BE_DEFINED));
         }
 
         model.fields = model.fields || {};
@@ -78,11 +109,16 @@ module.exports.create = ( spec ) => {
             app.use(middleware);
         }
 
-        Promise.all([
-            postRouter.create({ projectId: projectId, model: model }),
-            getRouter.create({ projectId: projectId, model: model })
-            // TODO - insert other routers
-        ])
+        var routes = [];
+
+        if( post ) routes.push( postRouter.create({ projectId: projectId, model: model }));
+        if( get  ) routes.push( getRouter.create( { projectId: projectId, model: model })); 
+
+        if(routes.length === 0) {
+            return reject(new Error(_ERROR.NO_HTTP_METHODS_ENABLED));
+        }      
+
+        Promise.all(routes)
         .then( function(routers) {
             app.use(routers);
         })
@@ -95,4 +131,12 @@ module.exports.create = ( spec ) => {
             reject(err);
         });
     });
+};
+
+
+var _ERROR = module.exports.ERROR = {
+    MODEL_MUST_BE_DEFINED:      "datastore.create: model must be defined",
+    MODEL_NAME_MUST_BE_DEFINED: "datastore.create: model.name must be defined",
+    PROJECT_ID_MUST_BE_DEFINED: "datastore.create: projectId must be defined",
+    NO_HTTP_METHODS_ENABLED:    "datastore.create: No HTTP methods enabled"    
 };
