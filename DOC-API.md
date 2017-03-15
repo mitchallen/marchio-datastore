@@ -76,19 +76,18 @@ factory.create({
 Error module
 
 
-* [marchio-datastore-ERROR](#module_marchio-datastore-ERROR)
-    * [.MODEL_MUST_BE_DEFINED](#module_marchio-datastore-ERROR+MODEL_MUST_BE_DEFINED)
-    * [.MODEL_NAME_MUST_BE_DEFINED](#module_marchio-datastore-ERROR+MODEL_NAME_MUST_BE_DEFINED)
+| Param | Type | Description |
+| --- | --- | --- |
+| ```MODEL_MUST_BE_DEFINED``` | <code>string</code> | datastore.create: model must be defined |
+| ```MODEL_NAME_MUST_BE_DEFINED``` | <code>string</code> | datastore.create: model.name must be defined |
+| ```PROJECT_ID_MUST_BE_DEFINED``` | <code>string</code> | datastore.create: projectId must be defined |
+| ```NO_HTTP_METHODS_ENABLED``` | <code>string</code> | datastore.create: No HTTP methods enabled |
 
-<a name="module_marchio-datastore-ERROR+MODEL_MUST_BE_DEFINED"></a>
-
-### marchio-datastore-ERROR.MODEL_MUST_BE_DEFINED
-Model definition error
-
-**Kind**: instance property of <code>[marchio-datastore-ERROR](#module_marchio-datastore-ERROR)</code>  
-<a name="module_marchio-datastore-ERROR+MODEL_NAME_MUST_BE_DEFINED"></a>
-
-### marchio-datastore-ERROR.MODEL_NAME_MUST_BE_DEFINED
-Model name definition error
-
-**Kind**: instance property of <code>[marchio-datastore-ERROR](#module_marchio-datastore-ERROR)</code>  
+**Example** *(Usage example)*  
+```js
+ .catch( (err) => {
+    if( err.message == _factory.ERROR.MODEL_MUST_BE_DEFINED ) {
+        ...
+    }
+}
+```

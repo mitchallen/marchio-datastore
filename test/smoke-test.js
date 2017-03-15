@@ -14,7 +14,7 @@ var request = require('supertest'),
     should = require('should'),
     killable = require('killable'),
     modulePath = "../modules/index",
-    GOOGLE_TEST_PROJECT = process.env.MARCHIO_TEST_GOOGLE_PROJECT,
+    GOOGLE_TEST_PROJECT = process.env.MARCHIO_GOOGLE_PROJECT_ID,
     TEST_PORT = process.env.MARCHIO_PORT || 8080;
 
 var getRandomInt = function (min, max) {

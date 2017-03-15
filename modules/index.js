@@ -135,18 +135,19 @@ module.exports.create = ( spec ) => {
  * 
  * Error module
  * @module marchio-datastore-ERROR
+ * @param {string} ```MODEL_MUST_BE_DEFINED``` - datastore.create: model must be defined
+ * @param {string} ```MODEL_NAME_MUST_BE_DEFINED``` - datastore.create: model.name must be defined
+ * @param {string} ```PROJECT_ID_MUST_BE_DEFINED``` - datastore.create: projectId must be defined
+ * @param {string} ```NO_HTTP_METHODS_ENABLED``` - datastore.create: No HTTP methods enabled
+ * @example <caption>Usage example</caption>
+ .catch( (err) => {
+    if( err.message == _factory.ERROR.MODEL_MUST_BE_DEFINED ) {
+        ...
+    }
+}
  */
-
 var _ERROR = module.exports.ERROR = {
-    /** Model definition error
-      * @instance
-      * @memberof module:marchio-datastore-ERROR
-    */
     MODEL_MUST_BE_DEFINED:      "datastore.create: model must be defined",
-    /** Model name definition error
-      * @instance
-      * @memberof module:marchio-datastore-ERROR
-    */
     MODEL_NAME_MUST_BE_DEFINED: "datastore.create: model.name must be defined",
     PROJECT_ID_MUST_BE_DEFINED: "datastore.create: projectId must be defined",
     NO_HTTP_METHODS_ENABLED:    "datastore.create: No HTTP methods enabled"    
