@@ -36,7 +36,7 @@ const express = require('express'),
  * @param {boolean} spec.put Allow HTTP PUT (Feature Not Implemented Yet)
  * @param {boolean} spec.patch Allow HTTP PATCH (Feature Not Implemented Yet)
  * @param {boolean} spec.del Allow HTTP DELETE (Feature Not Implemented Yet)
- * @returns {Promise} that resolves to {module:marchio-datastore}
+ * @returns {Promise} that resolves to an expressjs app
  * @example <caption>Usage example</caption>
  * var factory = require("marchio-datastore");
  *

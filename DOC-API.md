@@ -29,7 +29,7 @@ Factory method
 It takes one spec parameter that must be an object with named parameters
 
 **Kind**: static method of <code>[marchio-datastore-factory](#module_marchio-datastore-factory)</code>  
-**Returns**: <code>Promise</code> - that resolves to {module:marchio-datastore}  
+**Returns**: <code>Promise</code> - that resolves to an expressjs app  
 
 | Param | Type | Description |
 | --- | --- | --- |

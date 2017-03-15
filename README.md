@@ -59,7 +59,7 @@ Factory method
 It takes one spec parameter that must be an object with named parameters
 
 **Kind**: static method of <code>[marchio-datastore-factory](#module_marchio-datastore-factory)</code>  
-**Returns**: <code>Promise</code> - that resolves to {module:marchio-datastore}  
+**Returns**: <code>Promise</code> - that resolves to an expressjs app  
 
 | Param | Type | Description |
 | --- | --- | --- |
@@ -147,6 +147,10 @@ Add unit tests for any new or changed functionality. Lint and test your code.
 * * *
 
 ## Version History
+
+#### Version 0.1.2
+
+* Fixed some doc issues
 
 #### Version 0.1.1
 
