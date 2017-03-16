@@ -445,8 +445,6 @@ describe('module factory smoke test', () => {
                 email: "testput" + getRandomInt( 1000, 1000000) + "@smoketest.cloud",
             };
 
-            // console.log(`TEST HOST: ${_testHost} `);
-
             // SETUP - need to post at least one record
             request(_testHost)
                 .post(_postUrl)
@@ -461,7 +459,7 @@ describe('module factory smoke test', () => {
                     res.body.email.should.eql(testObject.email);
                     res.body.status.should.eql("NEW");
                     should.exist(res.body._id);
-                    // GET
+                    // PUT
                     var _recordId = res.body._id; 
                     var _putUrl = `/${_testModel.name}/${_recordId}`;
                     // console.log("PUT URL: ", _putUrl);
@@ -490,6 +488,92 @@ describe('module factory smoke test', () => {
                                     done();;
                                 });
                         });
+                });
+
+        })
+        .catch( function(err) { 
+            console.error(err); 
+            done(err);  // to pass on err, remove err (done() - no arguments)
+        });
+    });
+
+    it('put for non-existent id should return 404', done => {
+        _factory.create({
+            projectId: GOOGLE_TEST_PROJECT,
+            model: _testModel,
+            post: true,
+            get: true,
+            put: true
+        })
+        .then(function(app) {
+            _server = app.listen(TEST_PORT, () => {
+                // console.log(`listening on port ${TEST_PORT}`);   
+            });
+            killable(_server);
+            return Promise.resolve(true);
+        })
+        .then( () => {
+
+            var testObject = {
+                email: "testput" + getRandomInt( 1000, 1000000) + "@smoketest.cloud",
+            };
+
+            // PUT
+            var _recordId = '123456'; 
+            var _putUrl = `/${_testModel.name}/${_recordId}`;
+            // console.log("PUT URL: ", _putUrl);
+            request(_testHost)
+                .put(_putUrl)
+                .send({ email: testObject.email, status: "UPDATED" })
+                // .send({ status: "UPDATED" })
+                .set('Content-Type', 'application/json')
+                .expect(404)    // No content returned
+                .end(function (err, res) {
+                    should.not.exist(err);
+                    done();
+                });
+
+        })
+        .catch( function(err) { 
+            console.error(err); 
+            done(err);  // to pass on err, remove err (done() - no arguments)
+        });
+    });
+
+    it('put for non-numeric id should return 404', done => {
+        _factory.create({
+            projectId: GOOGLE_TEST_PROJECT,
+            model: _testModel,
+            post: true,
+            get: true,
+            put: true
+        })
+        .then(function(app) {
+            _server = app.listen(TEST_PORT, () => {
+                // console.log(`listening on port ${TEST_PORT}`);   
+            });
+            killable(_server);
+            return Promise.resolve(true);
+        })
+        .then( () => {
+
+            var testObject = {
+                email: "testput" + getRandomInt( 1000, 1000000) + "@smoketest.cloud",
+            };
+
+            // PUT
+            var _recordId = 'BOGUS'; 
+            var _putUrl = `/${_testModel.name}/${_recordId}`;
+            // console.log("PUT URL: ", _putUrl);
+            request(_testHost)
+                .put(_putUrl)
+                .send({ email: testObject.email, status: "UPDATED" })
+                // .send({ status: "UPDATED" })
+                .set('Content-Type', 'application/json')
+                .expect(404)    // No content returned
+                .end(function (err, res) {
+                    should.not.exist(err);
+                    done();
                 });
 
         })

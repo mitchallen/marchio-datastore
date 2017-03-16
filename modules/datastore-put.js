@@ -41,7 +41,7 @@ module.exports.create = ( spec ) => {
 
                 if( ! record ) {
                     eMsg = `### ERROR: request fields failed validation`;
-                    console.error(eMsg);
+                    // console.error(eMsg);
                     res
                         .status(404)
                         .json({ error: eMsg });
@@ -54,12 +54,23 @@ module.exports.create = ( spec ) => {
 
                 // For a PUT operation
                 // var dbId = req.params.id;    // would go in as 'name' and not 'id' (because it's a string)
-                var dbId = parseInt( req.params.id, 10 );
+                var dbId = parseInt( req.params.id, 10 ) || -1;
                 // console.log('ID: ', dbId );
+
+                if( dbId === -1 ) {
+
+                    // Invalid id format
+                    eMsg = `### ERROR: '${req.params.id}' is not a valid id`;
+                    // console.error(eMsg);
+                    res
+                        .status(404)
+                        .json({ error: eMsg });
+                    return;
+                }
 
                 var key = ds.key( [ model.name, dbId ] );
 
-                // console.log(key);
+                // console.log("KEY: ", key);
 
                 // For a POST operation
                 // var key = ds.key( model.name );
@@ -94,12 +105,16 @@ module.exports.create = ( spec ) => {
                         .json(record);
 
                 }).catch( function(err) { 
-                    console.error(err); 
-                    if(err) {
-                        res
-                            .status(500)
-                            .json(err);
-                    } 
+                    // console.error(err); 
+                    // if(err) {
+                    //     res
+                    //         .status(500)
+                    //         .json(err);
+                    // } 
+
+                    res
+                        .status(404)    // Error may simply indicate entity not found
+                        .end();
                 });
             };
             
