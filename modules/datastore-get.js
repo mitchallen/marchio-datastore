@@ -28,15 +28,25 @@ module.exports.create = ( spec ) => {
                 var eMsg = '';
 
                 if( req.params.model !== model.name ) {
-                    eMsg = `### ERROR: '${req.params.model}'' is not a valid database model`;
-                    console.error(eMsg);
+                    eMsg = `### ERROR: '${req.params.model}' is not a valid database model`;
+                    // console.error(eMsg);
                     res
                         .status(404)
                         .json({ error: eMsg });
                     return;
                 }
 
-                var _id = parseInt(req.params.id, 10);
+                var _id = parseInt(req.params.id, 10) || -1;
+
+                if( _id === -1 ) {
+                    // Invalid id format
+                    eMsg = `### ERROR: '${req.params.id}' is not a valid id`;
+                    // console.error(eMsg);
+                    res
+                        .status(404)
+                        .json({ error: eMsg });
+                    return;
+                }
 
                 const query = ds.createQuery( model.name )
                     .filter('__key__', '=', ds.key([ model.name, _id]))
@@ -53,9 +63,11 @@ module.exports.create = ( spec ) => {
                     const records = results[0];
 
                     if(records.length === 0 ) {
+                        eMsg = `### '${_id}' not found`;
+                        // console.error(eMsg);
                         res
                             .status(404)
-                            .end();
+                            .json({ error: eMsg });
                         return;
                     }
 

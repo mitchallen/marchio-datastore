@@ -337,6 +337,93 @@ describe('module factory smoke test', () => {
         });
     });
 
+    it('get for non-existent id should return 404', done => {
+        _factory.create({
+            projectId: GOOGLE_TEST_PROJECT,
+            model: _testModel,
+            post: true,
+            get:  true
+        })
+        .then(function(app) {
+            _server = app.listen(TEST_PORT, () => {
+                   // console.log(`listening on port ${TEST_PORT}`);   
+            });
+            killable(_server);
+            return Promise.resolve(true);
+        })
+        .then( () => {
+
+            var testObject = {
+                email: "test" + getRandomInt( 1000, 1000000) + "@smoketest.cloud",
+            };
+
+            // console.log(`TEST HOST: ${_testHost} `);
+
+            // GET
+            var _recordId = '12345678'; 
+            var _getUrl = `/${_testModel.name}/${_recordId}`;
+            // console.log("GET URL: ", _getUrl);
+            request(_testHost)
+                .get(_getUrl)
+                .expect(404)
+                .end(function (err, res) {
+                    should.not.exist(err);
+                    // console.log(res.body);
+                    done();;
+                });
+
+
+        })
+        .catch( function(err) { 
+            console.error(err); 
+            done(err);  // to pass on err, remove err (done() - no arguments)
+        });
+    });
+
+    it('get for non-numeric id should return 404', done => {
+        _factory.create({
+            projectId: GOOGLE_TEST_PROJECT,
+            model: _testModel,
+            post: true,
+            get:  true
+        })
+        .then(function(app) {
+            _server = app.listen(TEST_PORT, () => {
+                   // console.log(`listening on port ${TEST_PORT}`);   
+            });
+            killable(_server);
+            return Promise.resolve(true);
+        })
+        .then( () => {
+
+            var testObject = {
+                email: "test" + getRandomInt( 1000, 1000000) + "@smoketest.cloud",
+            };
+
+            // console.log(`TEST HOST: ${_testHost} `);
+
+            // GET
+            var _recordId = 'BOGUS'; 
+            var _getUrl = `/${_testModel.name}/${_recordId}`;
+            // console.log("GET URL: ", _getUrl);
+            request(_testHost)
+                .get(_getUrl)
+                .expect(404)
+                .end(function (err, res) {
+                    should.not.exist(err);
+                    // console.log(res.body);
+                    res.body.error.should.containEql('not a valid id');
+                    done();;
+                });
+
+
+        })
+        .catch( function(err) { 
+            console.error(err); 
+            done(err);  // to pass on err, remove err (done() - no arguments)
+        });
+    });
+
     it('put should succeed', done => {
         _factory.create({
             projectId: GOOGLE_TEST_PROJECT,
@@ -468,6 +555,7 @@ describe('module factory smoke test', () => {
                                 .end(function (err, res) {
                                     should.not.exist(err);
                                     // console.log(res.body);
+                                    res.body.error.should.containEql('not found');
                                     done();;
                                 });
                         });
