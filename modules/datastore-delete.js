@@ -36,7 +36,14 @@ module.exports.create = ( spec ) => {
                     return;
                 }
 
-                var _id = parseInt(req.params.id, 10);
+                var _id = parseInt(req.params.id, 10) || -1;
+
+                if( _id === -1 ) {
+                    res
+                        .status(200)
+                        .end();
+                    return;
+                }
 
                 ds.delete(ds.key([ model.name, _id]))
                 .then((results) => {

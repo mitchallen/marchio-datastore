@@ -337,7 +337,7 @@ describe('module factory smoke test', () => {
         });
     });
 
-    it('get for non-existent id should return 404', done => {
+    it('get for a non-existent id should return 404', done => {
         _factory.create({
             projectId: GOOGLE_TEST_PROJECT,
             model: _testModel,
@@ -380,7 +380,7 @@ describe('module factory smoke test', () => {
         });
     });
 
-    it('get for non-numeric id should return 404', done => {
+    it('get for a non-numeric id should return 404', done => {
         _factory.create({
             projectId: GOOGLE_TEST_PROJECT,
             model: _testModel,
@@ -560,6 +560,92 @@ describe('module factory smoke test', () => {
                                 });
                         });
                 });
+
+        })
+        .catch( function(err) { 
+            console.error(err); 
+            done(err);  // to pass on err, remove err (done() - no arguments)
+        });
+    });
+
+    it('delete for a non-existent id should return 200', done => {
+        _factory.create({
+            projectId: GOOGLE_TEST_PROJECT,
+            model: _testModel,
+            post: true,
+            get:  true,
+            del: true
+        })
+        .then(function(app) {
+            _server = app.listen(TEST_PORT, () => {
+                   // console.log(`listening on port ${TEST_PORT}`);   
+            });
+            killable(_server);
+            return Promise.resolve(true);
+        })
+        .then( () => {
+
+            var testObject = {
+                email: "test" + getRandomInt( 1000, 1000000) + "@smoketest.cloud",
+            };
+
+            // console.log(`TEST HOST: ${_testHost} `);
+
+            // DELETE
+            var _recordId = '12345678'; 
+            var _delUrl = `/${_testModel.name}/${_recordId}`;
+            // console.log("DEL URL: ", _delUrl);
+            request(_testHost)
+                .del(_delUrl)
+                .expect(200)
+                .end(function (err, res) {
+                    should.not.exist(err);
+                    done();
+                });
+   
+
+        })
+        .catch( function(err) { 
+            console.error(err); 
+            done(err);  // to pass on err, remove err (done() - no arguments)
+        });
+    });
+
+    it('delete for a non-numeric id should return 200', done => {
+        _factory.create({
+            projectId: GOOGLE_TEST_PROJECT,
+            model: _testModel,
+            post: true,
+            get:  true,
+            del: true
+        })
+        .then(function(app) {
+            _server = app.listen(TEST_PORT, () => {
+                   // console.log(`listening on port ${TEST_PORT}`);   
+            });
+            killable(_server);
+            return Promise.resolve(true);
+        })
+        .then( () => {
+
+            var testObject = {
+                email: "test" + getRandomInt( 1000, 1000000) + "@smoketest.cloud",
+            };
+
+            // console.log(`TEST HOST: ${_testHost} `);
+
+            // DELETE
+            var _recordId = 'BOGUS'; 
+            var _delUrl = `/${_testModel.name}/${_recordId}`;
+            // console.log("DEL URL: ", _delUrl);
+            request(_testHost)
+                .del(_delUrl)
+                .expect(200)
+                .end(function (err, res) {
+                    should.not.exist(err);
+                    done();
+                });
+   
 
         })
         .catch( function(err) { 
