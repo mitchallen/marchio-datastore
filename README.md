@@ -153,6 +153,8 @@ Add unit tests for any new or changed functionality. Lint and test your code.
 #### Version 0.1.4
 
 * Added HTTP DELETE support
+* Improved GET and PUT handling for invalid ids
+* Added and updated test cases
 
 #### Version 0.1.3
 
