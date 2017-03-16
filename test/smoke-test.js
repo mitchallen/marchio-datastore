@@ -42,7 +42,6 @@ describe('module factory smoke test', () => {
     var _postUrl = `/${_testModel.name}`;
 
     before( done => {
-        // Call before all tests
         delete require.cache[require.resolve(modulePath)];
         _factory = require(modulePath);
         done();
@@ -62,10 +61,11 @@ describe('module factory smoke test', () => {
     afterEach( done => {
         // Call after each test
         if( _server ) {
-            _server.close();
+            // console.log("killing server");
             _server.kill(() => {});
-            _server = null;
         }
+
+        _server = null;
 
         done();
     });
@@ -279,14 +279,15 @@ describe('module factory smoke test', () => {
         _factory.create({
             projectId: GOOGLE_TEST_PROJECT,
             model: _testModel,
-            post: true
+            post: true,
+            get:  true
         })
         .then(function(app) {
-           _server = app.listen(TEST_PORT, () => {
-               // console.log(`listening on port ${TEST_PORT}`);   
-           });
-           killable(_server);
-           return Promise.resolve(true);
+            _server = app.listen(TEST_PORT, () => {
+                   // console.log(`listening on port ${TEST_PORT}`);   
+            });
+            killable(_server);
+            return Promise.resolve(true);
         })
         .then( () => {
 
@@ -345,11 +346,11 @@ describe('module factory smoke test', () => {
             put: true
         })
         .then(function(app) {
-           _server = app.listen(TEST_PORT, () => {
-               // console.log(`listening on port ${TEST_PORT}`);   
-           });
-           killable(_server);
-           return Promise.resolve(true);
+            _server = app.listen(TEST_PORT, () => {
+                // console.log(`listening on port ${TEST_PORT}`);   
+            });
+            killable(_server);
+            return Promise.resolve(true);
         })
         .then( () => {
 
@@ -399,6 +400,74 @@ describe('module factory smoke test', () => {
                                     // should.not.exist(res.body.password);
                                     res.body.status.should.eql("UPDATED");
                                     should.exist(res.body._id);
+                                    done();;
+                                });
+                        });
+                });
+
+        })
+        .catch( function(err) { 
+            console.error(err); 
+            done(err);  // to pass on err, remove err (done() - no arguments)
+        });
+    });
+
+    it('delete should succeed', done => {
+        _factory.create({
+            projectId: GOOGLE_TEST_PROJECT,
+            model: _testModel,
+            post: true,
+            get:  true,
+            del: true
+        })
+        .then(function(app) {
+            _server = app.listen(TEST_PORT, () => {
+                   // console.log(`listening on port ${TEST_PORT}`);   
+            });
+            killable(_server);
+            return Promise.resolve(true);
+        })
+        .then( () => {
+
+            var testObject = {
+                email: "test" + getRandomInt( 1000, 1000000) + "@smoketest.cloud",
+            };
+
+            // console.log(`TEST HOST: ${_testHost} `);
+
+            // SETUP - need to post at least one record
+            request(_testHost)
+                .post(_postUrl)
+                .send(testObject)
+                .set('Content-Type', 'application/json')
+                .expect(201)
+                .end(function (err, res) {
+                    should.not.exist(err);
+                    should.exist(res);
+                    should.not.exist(err);
+                    // console.log(res.body);
+                    res.body.email.should.eql(testObject.email);
+                    res.body.status.should.eql("NEW");
+                    should.exist(res.body._id);
+                    // DELETE
+                    var _recordId = res.body._id; 
+                    var _delUrl = `/${_testModel.name}/${_recordId}`;
+                    // console.log("DEL URL: ", _delUrl);
+                    request(_testHost)
+                        .del(_delUrl)
+                        .expect(200)
+                        .end(function (err, res) {
+                            should.not.exist(err);
+                            res.body.status.should.eql("OK");
+                            // GET (make sure it's gone - expect 404)
+                            var _getUrl = `/${_testModel.name}/${_recordId}`;
+                            // console.log("GET URL: ", _getUrl);
+                            request(_testHost)
+                                .get(_getUrl)
+                                .expect(404)
+                                .end(function (err, res) {
+                                    should.not.exist(err);
+                                    // console.log(res.body);
                                     done();;
                                 });
                         });

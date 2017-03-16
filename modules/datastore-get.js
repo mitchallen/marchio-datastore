@@ -39,14 +39,25 @@ module.exports.create = ( spec ) => {
                 var _id = parseInt(req.params.id, 10);
 
                 const query = ds.createQuery( model.name )
-                    .filter('__key__', '=', ds.key([ model.name, _id]));
+                    .filter('__key__', '=', ds.key([ model.name, _id]))
+                    .limit(1);
 
                 ds.runQuery(query)
                 .then((results) => {
 
                     // console.log(results);
+                    // [ [ { status: 'NEW', email: 'test290686@smoketest.cloud' } ],
+                    //   { moreResults: 'NO_MORE_RESULTS',
+                    //     endCursor: 'CjASK...=' } ]
 
                     const records = results[0];
+
+                    if(records.length === 0 ) {
+                        res
+                            .status(404)
+                            .end();
+                        return;
+                    }
 
                     var list = [];
 

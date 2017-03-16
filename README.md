@@ -67,8 +67,8 @@ It takes one spec parameter that must be an object with named parameters
 | spec.post | <code>boolean</code> | Allow HTTP POST |
 | spec.get | <code>boolean</code> | Allow HTTP GET |
 | spec.put | <code>boolean</code> | Allow HTTP PUT |
+| spec.del | <code>boolean</code> | Allow HTTP DELETE |
 | spec.patch | <code>boolean</code> | Allow HTTP PATCH (Feature Not Implemented Yet) |
-| spec.del | <code>boolean</code> | Allow HTTP DELETE (Feature Not Implemented Yet) |
 
 **Example** *(Usage example)*  
 ```js
@@ -90,7 +90,8 @@ factory.create({
     projectId: GOOGLE_PROJECT_ID
     post: true,
     get: true,
-    put: true
+    put: true,
+       del: true
 })
 .then(function(app) {
     app.listen(PORT, () => {
@@ -148,6 +149,10 @@ Add unit tests for any new or changed functionality. Lint and test your code.
 * * *
 
 ## Version History
+
+#### Version 0.1.4
+
+* Added HTTP DELETE support
 
 #### Version 0.1.3
 

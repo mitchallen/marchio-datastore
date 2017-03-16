@@ -8,9 +8,7 @@
 
 "use strict";
 
-const express = require('express'),
-      router = express.Router(),
-      bodyParser = require('body-parser'),
+const bodyParser = require('body-parser'),
       datastore = require('@google-cloud/datastore');
 
 function validateParams(model) {
@@ -40,6 +38,9 @@ module.exports.create = ( spec ) => {
 
     return new Promise((resolve, reject) => {
 
+        const express = require('express'),
+              router = express.Router();
+      
         spec = spec || {};
 
         var model = spec.model,

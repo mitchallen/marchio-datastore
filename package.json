@@ -7,6 +7,7 @@
     "//": "To use: npm start (useful if not a module)",
     "start": "node dist/marchio-datastore.js",
     "test": "grunt && /usr/local/bin/mocha --recursive --timeout 20000",
+    "debug-express": "DEBUG=express:* npm test",
     "test-coverage": "./node_modules/.bin/istanbul cover _mocha -- -R spec test/**/*",
     "test-nodemon": "nodemon /usr/local/bin/mocha --timeout 5000",
     "test-debug": "nodemon /usr/local/bin/mocha -g '@DEBUG' --recursive --timeout 20000",
