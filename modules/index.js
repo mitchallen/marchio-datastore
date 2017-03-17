@@ -13,7 +13,8 @@ const bodyParser = require('body-parser'),
       postRouter = require('./datastore-post'),
       putRouter = require('./datastore-put'),
       getRouter = require('./datastore-get'),
-      delRouter = require('./datastore-delete');
+      delRouter = require('./datastore-delete'),
+      patchRouter = require('./datastore-patch');
 
 /**
  * Module
@@ -117,10 +118,11 @@ module.exports.create = ( spec ) => {
 
         var routes = [];
 
-        if( post ) routes.push( postRouter.create({ projectId: projectId, model: model }));
-        if( put )  routes.push( putRouter.create( { projectId: projectId, model: model }));
-        if( get  ) routes.push( getRouter.create( { projectId: projectId, model: model })); 
-        if( del  ) routes.push( delRouter.create( { projectId: projectId, model: model }));
+        if( post  ) routes.push( postRouter.create(  { projectId: projectId, model: model } ) );
+        if( put   ) routes.push( putRouter.create(   { projectId: projectId, model: model } ) );
+        if( get   ) routes.push( getRouter.create(   { projectId: projectId, model: model } ) ); 
+        if( del   ) routes.push( delRouter.create(   { projectId: projectId, model: model } ) );
+        if( patch ) routes.push( patchRouter.create( { projectId: projectId, model: model } ) );
 
         if(routes.length === 0) {
             return reject(new Error(_ERROR.NO_HTTP_METHODS_ENABLED));

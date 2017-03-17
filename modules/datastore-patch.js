@@ -1,5 +1,5 @@
 /**
-    Module: datastore-get.js
+    Module: datastore-patch.js
     Author: Mitch Allen
 */
 
@@ -8,7 +8,9 @@
 
 "use strict";
 
-const dsCore = require('./datastore-core');
+const dsCore = require('./datastore-core'),
+      dsRecord = require('./datastore-record'),
+      jsonpatch = require('fast-json-patch');
 
 module.exports.create = ( spec ) => {
 
@@ -26,22 +28,20 @@ module.exports.create = ( spec ) => {
             var getDB = function(req, res, next) {
 
                 var eMsg = '';
-
                 if( req.params.model !== model.name ) {
                     eMsg = `### ERROR: '${req.params.model}' is not a valid database model`;
-                    // console.error(eMsg);
+                    console.log(eMsg);
                     res
                         .status(404)
                         .json({ error: eMsg });
                     return;
                 }
 
+                var patches = req.body;
                 var dbId = parseInt(req.params.id, 10) || -1;
-
                 if( dbId === -1 ) {
-                    // Invalid id format
                     eMsg = `### ERROR: '${req.params.id}' is not a valid id`;
-                    // console.error(eMsg);
+                    console.log(eMsg);
                     res
                         .status(404)
                         .json({ error: eMsg });
@@ -54,17 +54,10 @@ module.exports.create = ( spec ) => {
 
                 ds.runQuery(query)
                 .then((results) => {
-
-                    // console.log(results);
-                    // [ [ { status: 'NEW', email: 'test290686@smoketest.cloud' } ],
-                    //   { moreResults: 'NO_MORE_RESULTS',
-                    //     endCursor: 'CjASK...=' } ]
-
                     const records = results[0];
-
                     if(records.length === 0 ) {
                         eMsg = `### '${dbId}' not found`;
-                        // console.error(eMsg);
+                        console.log(eMsg);
                         res
                             .status(404)
                             .json({ error: eMsg });
@@ -72,34 +65,45 @@ module.exports.create = ( spec ) => {
                     }
 
                     var list = [];
-
                     records.forEach((record) => {
                         const recordKey = record[ds.KEY];
-                        // console.log(recordKey.id, record );
-                        // TODO - add back in id
                         list.push(record);
                     });
 
-                    var response = list[0];
-                    response._id = dbId;
+                    var source = list[0];   // original record
+                    jsonpatch.apply(source, patches);
+                    var key = ds.key( [ model.name, dbId ] );
+                    var patchedRecord = dsRecord.build( model.fields, source );
 
-                    res
-                        .location("/" + [ model.name, dbId ].join('/') )  // .location("/" + model + "/" + doc._id)
-                        .status(200)    
-                        .json(response);
+                    var entity = {
+                      key: key,
+                      method: 'update',
+                      data: patchedRecord
+                    };
 
-                }).catch( function(err) { 
-                    console.error(err); 
-                    if(err) {
+                    ds.save(entity).then(function(data) {
+
+                        entity.data._id = key.id;
+
+                        var record = entity.data || entity;
+
                         res
-                            .status(500)
-                            .json(err);
-                    } 
-                });
+                            .location("/" + key.path.join('/') )  // .location("/" + model + "/" + doc._id)
+                            .status(200)    // Not returning data
+                            .json(record);
 
+                    }).catch( function(err) { 
+                        console.error(err); 
+                        if(err) {
+                            res
+                                .status(500)
+                                .json(err);
+                        } 
+                    });
+                });
             };
             
-            router.get( '/:model/:id', getDB );
+            router.patch( '/:model/:id', getDB );
 
             resolve(router);
         });

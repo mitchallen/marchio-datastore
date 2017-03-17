@@ -729,7 +729,85 @@ describe('module factory smoke test', () => {
                     should.not.exist(err);
                     done();
                 });
-   
+        })
+        .catch( function(err) { 
+            console.error(err); 
+            done(err);  // to pass on err, remove err (done() - no arguments)
+        });
+    });
+
+    it('patch should succeed', done => {
+        _factory.create({
+            projectId: GOOGLE_TEST_PROJECT,
+            model: _testModel,
+            post: true,
+            get: true,
+            patch: true
+        })
+        .then(function(app) {
+            _server = app.listen(TEST_PORT, () => {
+                // console.log(`listening on port ${TEST_PORT}`);   
+            });
+            killable(_server);
+            return Promise.resolve(true);
+        })
+        .then( () => {
+
+            var testObject = {
+                email: "testpatch" + getRandomInt( 1000, 1000000) + "@smoketest.cloud",
+            };
+
+            var patchStatus = "UPDATED PATCH STATUS",
+                testPatch = [
+                    // { "op": "remove", "path": "/password" }
+                    {"op": "replace", "path": "/status", "value": patchStatus }
+                ];
+
+            // SETUP - need to post at least one record
+            request(_testHost)
+                .post(_postUrl)
+                .send(testObject)
+                .set('Content-Type', 'application/json')
+                .expect(201)
+                .end(function (err, res) {
+                    should.not.exist(err);
+                    should.exist(res);
+                    should.not.exist(err);
+                    // console.log(res.body);
+                    res.body.email.should.eql(testObject.email);
+                    res.body.status.should.eql("NEW");
+                    should.exist(res.body._id);
+                    // PATCH
+                    var _recordId = res.body._id; 
+                    var _patchUrl = `/${_testModel.name}/${_recordId}`;
+                    // console.log("PATCH URL: ", _patchUrl);
+                    request(_testHost)
+                        .patch(_patchUrl)
+                        .send( testPatch )
+                        .set('Content-Type', 'application/json')
+                        .expect(200)  
+                        .end(function (err, res) {
+                            should.not.exist(err);
+                            res.body.email.should.eql(testObject.email);
+                            res.body.status.should.eql(patchStatus);
+                            // GET
+                            var _getUrl = `/${_testModel.name}/${_recordId}`;
+                            // console.log("GET URL: ", _getUrl);
+                            request(_testHost)
+                                .get(_getUrl)
+                                .expect(200)
+                                .end(function (err, res) {
+                                    should.not.exist(err);
+                                    // console.log("RECORD: ", res.body);
+                                    res.body.email.should.eql(testObject.email);
+                                    // // Should not return password
+                                    // should.not.exist(res.body.password);
+                                    res.body.status.should.eql(patchStatus);
+                                    should.exist(res.body._id);
+                                    done();;
+                                });
+                        });
+                });
 
         })
         .catch( function(err) { 

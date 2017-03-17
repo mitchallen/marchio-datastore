@@ -37,7 +37,7 @@ module.exports.create = ( spec ) => {
                 //     return;
                 // }
 
-                var record = dsRecord.build( model.fields, req );
+                var record = dsRecord.build( model.fields, req.body );
 
                 if( ! record ) {
                     eMsg = `### ERROR: request fields failed validation`;

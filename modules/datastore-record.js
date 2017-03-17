@@ -8,7 +8,7 @@
 
 "use strict";
 
-module.exports.build = function( fields, req ) {
+module.exports.build = function( fields, body ) {
     var record = {};
     for (var property in fields) {
         if (fields.hasOwnProperty(property)) {
@@ -16,7 +16,7 @@ module.exports.build = function( fields, req ) {
             var fld = fields[ property ];
             // console.log("...:", fld  );
             if( fld.required ) {
-                if( ! req.body.hasOwnProperty(property)) {
+                if( ! body.hasOwnProperty(property)) {
                     if( fld.default ) {
                         record[property] = fld.default;
                     } else {
@@ -26,8 +26,8 @@ module.exports.build = function( fields, req ) {
                     }
                 }
             }
-            if(req.body[property]) {
-                record[property] = req.body[property];
+            if(body[property]) {
+                record[property] = body[property];
             } else if( fld.default ) {
                 record[property] = fld.default;
             }
@@ -35,3 +35,4 @@ module.exports.build = function( fields, req ) {
     }
     return record;
 };
+
