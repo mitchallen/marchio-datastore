@@ -35,7 +35,7 @@ const bodyParser = require('body-parser'),
  * @param {boolean} spec.get Allow HTTP GET
  * @param {boolean} spec.put Allow HTTP PUT
  * @param {boolean} spec.del Allow HTTP DELETE
- * @param {boolean} spec.patch Allow HTTP PATCH (Feature Not Implemented Yet)
+ * @param {boolean} spec.patch Allow HTTP PATCH 
  * @returns {Promise} that resolves to an expressjs app
  * @example <caption>Usage example</caption>
  * var factory = require("marchio-datastore");
@@ -57,7 +57,8 @@ const bodyParser = require('body-parser'),
  *     post: true,
  *     get: true,
  *     put: true,
-       del: true
+       del: true,
+       patch: true
  * })
  * .then(function(app) {
  *     app.listen(PORT, () => {

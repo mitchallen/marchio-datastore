@@ -815,4 +815,98 @@ describe('module factory smoke test', () => {
             done(err);  // to pass on err, remove err (done() - no arguments)
         });
     });
+
+    it('patch for non-existent id should return 404', done => {
+        _factory.create({
+            projectId: GOOGLE_TEST_PROJECT,
+            model: _testModel,
+            post: true,
+            get: true,
+            put: true
+        })
+        .then(function(app) {
+            _server = app.listen(TEST_PORT, () => {
+                // console.log(`listening on port ${TEST_PORT}`);   
+            });
+            killable(_server);
+            return Promise.resolve(true);
+        })
+        .then( () => {
+
+            var testObject = {
+                email: "testput" + getRandomInt( 1000, 1000000) + "@smoketest.cloud",
+            };
+
+            var patchStatus = "UPDATED PATCH STATUS",
+                testPatch = [
+                    // { "op": "remove", "path": "/password" }
+                    {"op": "replace", "path": "/status", "value": patchStatus }
+                ];
+
+            // PATCH
+            var _recordId = '123456'; 
+            var _patchUrl = `/${_testModel.name}/${_recordId}`;
+            request(_testHost)
+                .patch(_patchUrl)
+                .send( testPatch )
+                .set('Content-Type', 'application/json')
+                .expect(404)   
+                .end(function (err, res) {
+                    should.not.exist(err);
+                    done();
+                });
+
+        })
+        .catch( function(err) { 
+            console.error(err); 
+            done(err);  // to pass on err, remove err (done() - no arguments)
+        });
+    });
+
+    it('patch for non-numeric id should return 404', done => {
+        _factory.create({
+            projectId: GOOGLE_TEST_PROJECT,
+            model: _testModel,
+            post: true,
+            get: true,
+            put: true
+        })
+        .then(function(app) {
+            _server = app.listen(TEST_PORT, () => {
+                // console.log(`listening on port ${TEST_PORT}`);   
+            });
+            killable(_server);
+            return Promise.resolve(true);
+        })
+        .then( () => {
+
+            var testObject = {
+                email: "testput" + getRandomInt( 1000, 1000000) + "@smoketest.cloud",
+            };
+
+            var patchStatus = "UPDATED PATCH STATUS",
+            testPatch = [
+                // { "op": "remove", "path": "/password" }
+                {"op": "replace", "path": "/status", "value": patchStatus }
+            ];
+
+            // PATCH
+            var _recordId = 'BOGUS'; 
+            var _patchUrl = `/${_testModel.name}/${_recordId}`;
+            request(_testHost)
+                .patch(_patchUrl)
+                .send(testPatch)
+                .set('Content-Type', 'application/json')
+                .expect(404)   
+                .end(function (err, res) {
+                    should.not.exist(err);
+                    done();
+                });
+
+        })
+        .catch( function(err) { 
+            console.error(err); 
+            done(err);  // to pass on err, remove err (done() - no arguments)
+        });
+    });
 });
