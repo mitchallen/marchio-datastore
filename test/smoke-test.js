@@ -32,11 +32,19 @@ describe('module factory smoke test', () => {
         fields: {
             email:    { type: String, required: true },
             status:   { type: String, required: true, default: "NEW" },
-            // password: { type: String, select: false },  // select: false, exclude from query results
+            // In a real world example, password would be hashed by middleware before being saved
+            password: { type: String, select: false },  // select: false, exclude from query results
             // alpha:    { type: String, required: true, default: "AAA" },
             // beta :    { type: String, default: "BBB" },
         }
     };
+
+    var _hashPassword = function( req, res, next ) {
+        console.log(req.body);
+        // if req.body, if req.body.password
+        // req.body.password = "zorro";
+        next();
+    }
 
     var _testHost = `http://localhost:${TEST_PORT}`;
     var _postUrl = `/${_testModel.name}`;
@@ -248,6 +256,7 @@ describe('module factory smoke test', () => {
 
             var testObject = {
                 email: "test" + getRandomInt( 1000, 1000000) + "@smoketest.cloud",
+                password: "fubar"
             };
 
             // console.log(`TEST HOST: ${_testHost} `);
@@ -262,7 +271,7 @@ describe('module factory smoke test', () => {
                     // console.log(res.body);
                     res.body.email.should.eql(testObject.email);
                     // // Should not return password
-                    // should.not.exist(res.body.password);
+                    should.not.exist(res.body.password);
                     res.body.status.should.eql("NEW");
                     should.exist(res.body._id);
                     done();;
@@ -293,6 +302,7 @@ describe('module factory smoke test', () => {
 
             var testObject = {
                 email: "test" + getRandomInt( 1000, 1000000) + "@smoketest.cloud",
+                password: "fubar"
             };
 
             // console.log(`TEST HOST: ${_testHost} `);
@@ -323,7 +333,7 @@ describe('module factory smoke test', () => {
                             // console.log(res.body);
                             res.body.email.should.eql(testObject.email);
                             // // Should not return password
-                            // should.not.exist(res.body.password);
+                            should.not.exist(res.body.password);
                             res.body.status.should.eql("NEW");
                             should.exist(res.body._id);
                             done();;
@@ -355,6 +365,7 @@ describe('module factory smoke test', () => {
 
             var testObject = {
                 email: "test" + getRandomInt( 1000, 1000000) + "@smoketest.cloud",
+                password: "fubar"
             };
 
             // console.log(`TEST HOST: ${_testHost} `);
@@ -398,6 +409,7 @@ describe('module factory smoke test', () => {
 
             var testObject = {
                 email: "test" + getRandomInt( 1000, 1000000) + "@smoketest.cloud",
+                password: "fubar"
             };
 
             // console.log(`TEST HOST: ${_testHost} `);
@@ -443,6 +455,7 @@ describe('module factory smoke test', () => {
 
             var testObject = {
                 email: "testput" + getRandomInt( 1000, 1000000) + "@smoketest.cloud",
+                password: "fubar"
             };
 
             // SETUP - need to post at least one record
@@ -465,6 +478,7 @@ describe('module factory smoke test', () => {
                     // console.log("PUT URL: ", _putUrl);
                     request(_testHost)
                         .put(_putUrl)
+                        // PROBLEM: hashed password is not included and Datastore doesn't do partial updates
                         .send({ email: testObject.email, status: "UPDATED" })
                         // .send({ status: "UPDATED" })
                         .set('Content-Type', 'application/json')
@@ -476,13 +490,17 @@ describe('module factory smoke test', () => {
                             // console.log("GET URL: ", _getUrl);
                             request(_testHost)
                                 .get(_getUrl)
+                                // Get ALL fields, verify password intact.
+                                .query( { fields: 'email password status'} )
                                 .expect(200)
                                 .end(function (err, res) {
                                     should.not.exist(err);
                                     // console.log("RECORD: ", res.body);
                                     res.body.email.should.eql(testObject.email);
-                                    // // Should not return password
-                                    // should.not.exist(res.body.password);
+                                    // Should return password based on fields query
+                                    should.exist(res.body.password);
+                                    // In production the password would be hashed and would not match
+                                    res.body.password.should.eql(testObject.password);
                                     res.body.status.should.eql("UPDATED");
                                     should.exist(res.body._id);
                                     done();;
@@ -516,6 +534,7 @@ describe('module factory smoke test', () => {
 
             var testObject = {
                 email: "testput" + getRandomInt( 1000, 1000000) + "@smoketest.cloud",
+                password: "fubar"
             };
 
             // PUT
@@ -559,6 +578,7 @@ describe('module factory smoke test', () => {
 
             var testObject = {
                 email: "testput" + getRandomInt( 1000, 1000000) + "@smoketest.cloud",
+                password: "fubar"
             };
 
             // PUT
@@ -602,6 +622,7 @@ describe('module factory smoke test', () => {
 
             var testObject = {
                 email: "test" + getRandomInt( 1000, 1000000) + "@smoketest.cloud",
+                password: "fubar"
             };
 
             // console.log(`TEST HOST: ${_testHost} `);
@@ -671,6 +692,7 @@ describe('module factory smoke test', () => {
 
             var testObject = {
                 email: "test" + getRandomInt( 1000, 1000000) + "@smoketest.cloud",
+                password: "fubar"
             };
 
             // console.log(`TEST HOST: ${_testHost} `);
@@ -714,6 +736,7 @@ describe('module factory smoke test', () => {
 
             var testObject = {
                 email: "test" + getRandomInt( 1000, 1000000) + "@smoketest.cloud",
+                password: "fubar"
             };
 
             // console.log(`TEST HOST: ${_testHost} `);
@@ -755,6 +778,7 @@ describe('module factory smoke test', () => {
 
             var testObject = {
                 email: "testpatch" + getRandomInt( 1000, 1000000) + "@smoketest.cloud",
+                password: "fubar"
             };
 
             var patchStatus = "UPDATED PATCH STATUS",
@@ -801,7 +825,7 @@ describe('module factory smoke test', () => {
                                     // console.log("RECORD: ", res.body);
                                     res.body.email.should.eql(testObject.email);
                                     // // Should not return password
-                                    // should.not.exist(res.body.password);
+                                    should.not.exist(res.body.password);
                                     res.body.status.should.eql(patchStatus);
                                     should.exist(res.body._id);
                                     done();;
@@ -834,7 +858,8 @@ describe('module factory smoke test', () => {
         .then( () => {
 
             var testObject = {
-                email: "testput" + getRandomInt( 1000, 1000000) + "@smoketest.cloud",
+                email: "testpatch" + getRandomInt( 1000, 1000000) + "@smoketest.cloud",
+                password: "fubar"
             };
 
             var patchStatus = "UPDATED PATCH STATUS",
@@ -882,6 +907,7 @@ describe('module factory smoke test', () => {
 
             var testObject = {
                 email: "testput" + getRandomInt( 1000, 1000000) + "@smoketest.cloud",
+                password: "fubar"
             };
 
             var patchStatus = "UPDATED PATCH STATUS",

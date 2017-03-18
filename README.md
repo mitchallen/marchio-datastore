@@ -81,7 +81,9 @@ var _testModel = {
     name: 'user',
     fields: {
         email:    { type: String, required: true },
-        status:   { type: String, required: true, default: "NEW" }
+        status:   { type: String, required: true, default: "NEW" },
+           // In a real world example this would have been hashed in middleware and not stored as plain text
+        password: { type: String, select: false },  // select: false, exclude from query results
     }
 };
 
@@ -91,8 +93,8 @@ factory.create({
     post: true,
     get: true,
     put: true,
-       del: true,
-       patch: true
+    del: true,
+    patch: true
 })
 .then(function(app) {
     app.listen(PORT, () => {
@@ -125,6 +127,7 @@ Error module
 }
 ```
 
+
 * * *
 
 ## Testing
@@ -150,6 +153,11 @@ Add unit tests for any new or changed functionality. Lint and test your code.
 * * *
 
 ## Version History
+
+#### Version 0.1.6
+
+* HTTP PUT can now handle partial updates
+* Behind the scenes PUT now use a transaction to ensure record integrity
 
 #### Version 0.1.5
 

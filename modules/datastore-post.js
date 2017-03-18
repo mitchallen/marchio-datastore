@@ -72,9 +72,9 @@ module.exports.create = ( spec ) => {
                     // console.log(key.path); // [ 'Company', 5669468231434240 ]
                     // console.log(key.namespace); // undefined
 
-                    entity.data._id = key.id;
-
-                    var record = entity.data || entity;
+                    var record = dsRecord.select( model.fields, entity.data || entity );
+                    // Must call AFTER select or id will be filtered out
+                    record._id = key.id;
 
                     res
                         .location("/" + key.path.join('/') )  // .location("/" + model + "/" + doc._id)

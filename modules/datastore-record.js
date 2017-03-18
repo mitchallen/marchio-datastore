@@ -36,3 +36,33 @@ module.exports.build = function( fields, body ) {
     return record;
 };
 
+module.exports.select = function( fields, body ) {
+    var record = {};
+    for (var property in fields) {
+        if (fields.hasOwnProperty(property)) {
+            // console.log("PROPERTY:", property );
+            var fld = fields[ property ];
+            // console.log("...:", fld  );
+            var selected = fld.select === undefined || fld.select;
+            if( selected ) {
+                // console.log( "SELECTED: ", property );
+                if(body[property]) {
+                    record[property] = body[property];
+                }
+            }
+        }
+    }
+    return record;
+};
+
+module.exports.fields = function( fieldList, body ) {
+    var record = {};
+    fieldList.forEach(function(property) {
+        // console.log("FIELDS PROPERTY:", property );
+        if(body[property]) {
+            record[property] = body[property];
+        }
+    });
+    return record;
+};
+

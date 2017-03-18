@@ -8,8 +8,8 @@
 
 "use strict";
 
-const dsCore = require('./datastore-core');
-const dsRecord = require('./datastore-record');
+const dsCore = require('./datastore-core'),
+      dsRecord = require('./datastore-record');
 
 module.exports.create = ( spec ) => {
 
@@ -28,15 +28,6 @@ module.exports.create = ( spec ) => {
 
                 var eMsg = '';
 
-                // if( req.params.model !== model.name ) {
-                //     eMsg = `### ERROR: '${req.params.model}'' is not a valid database model`;
-                //     console.error(eMsg);
-                //     res
-                //         .status(404)
-                //         .json({ error: eMsg });
-                //     return;
-                // }
-
                 var record = dsRecord.build( model.fields, req.body );
 
                 if( ! record ) {
@@ -48,14 +39,9 @@ module.exports.create = ( spec ) => {
                     return;
                 }
 
-                // console.log(record);
-
-                // console.log("MODEL NAME: ", model.name );
-
                 // For a PUT operation
                 // var dbId = req.params.id;    // would go in as 'name' and not 'id' (because it's a string)
                 var dbId = parseInt( req.params.id, 10 ) || -1;
-                // console.log('ID: ', dbId );
 
                 if( dbId === -1 ) {
 
@@ -72,50 +58,56 @@ module.exports.create = ( spec ) => {
 
                 // console.log("KEY: ", key);
 
-                // For a POST operation
-                // var key = ds.key( model.name );
+                const transaction = ds.transaction();
 
-                var entity = {
-                  key: key,
-                  method: 'update',
-                  // method: 'insert',  // will get already exists - can use in POST
-                  // method: 'upsert',
-                  data: record
-                };
+                transaction.run() 
+                // .then( () => Promise.all([ transaction.get(key) ] ))
+                .then( () => transaction.get(key))
+                .then( function(result) {
 
-                // console.log("ENTITY: ", entity);
+                    // Merge old record (target) with new record (record)
 
-                ds.save(entity).then(function(data) {
-                    // var apiResponse = data[0];
+                    let target = result[0];
 
-                    // console.log("=== SAVE DATA ===");
-                    // console.log(JSON.stringify(data,null,2));
-                    // console.log("^^^ SAVE DATA ^^^"); 
+                    if( target === undefined ) {
+                        return Promise.reject(`No record found for id: ${dbId}`);
+                    }
 
-                    // console.log(key.path); // [ 'Company', 5669468231434240 ]
-                    // console.log(key.namespace); // undefined
+                    const merged = Object.assign(target, record);
 
-                    entity.data._id = key.id;
+                    var entity = {
+                      key: key,
+                      method: 'update',     // does not do partial update
+                      // method: 'insert',  // will get already exists - can use in POST
+                      // method: 'upsert',  // will create new record if non exists or update for existing key
+                      data: merged
+                    };
 
-                    var record = entity.data || entity;
+                    return ds.save(entity).then(function(data) {
+
+                        entity.data._id = key.id;
+
+                        var record = entity.data || entity;
+
+                    });
+                })
+                .then( () => transaction.commit() )
+                .then( () => {
 
                     res
                         .location("/" + key.path.join('/') )  // .location("/" + model + "/" + doc._id)
                         .status(204)    // Not returning data
                         .json(record);
 
-                }).catch( function(err) { 
-                    // console.error(err); 
-                    // if(err) {
-                    //     res
-                    //         .status(500)
-                    //         .json(err);
-                    // } 
-
+                })
+                .catch( (err) => {
+                    // console.log("TRANSACTION ERROR: ", err);
+                    transaction.rollback();
                     res
                         .status(404)    // Error may simply indicate entity not found
                         .end();
                 });
+                
             };
             
             router.put( '/:model/:id', dsCore.validateParams(model), updateDB );

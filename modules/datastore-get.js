@@ -8,7 +8,8 @@
 
 "use strict";
 
-const dsCore = require('./datastore-core');
+const dsCore = require('./datastore-core'),
+      dsRecord = require('./datastore-record');
 
 module.exports.create = ( spec ) => {
 
@@ -48,7 +49,7 @@ module.exports.create = ( spec ) => {
                     return;
                 }
 
-                const query = ds.createQuery( model.name )
+                var query = ds.createQuery( model.name )
                     .filter('__key__', '=', ds.key([ model.name, dbId]))
                     .limit(1);
 
@@ -80,7 +81,14 @@ module.exports.create = ( spec ) => {
                         list.push(record);
                     });
 
-                    var response = list[0];
+                    var response = {};
+
+                    if( req.query.fields ) {
+                        response = dsRecord.fields( req.query.fields.split(" "), list[0] );
+                    } else {
+                        response = dsRecord.select( model.fields, list[0] );
+                    } 
+   
                     response._id = dbId;
 
                     res
@@ -98,7 +106,7 @@ module.exports.create = ( spec ) => {
                 });
 
             };
-            
+
             router.get( '/:model/:id', getDB );
 
             resolve(router);
