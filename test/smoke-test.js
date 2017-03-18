@@ -809,11 +809,9 @@ describe('module factory smoke test', () => {
                         .patch(_patchUrl)
                         .send( testPatch )
                         .set('Content-Type', 'application/json')
-                        .expect(200)  
+                        .expect(204)  
                         .end(function (err, res) {
                             should.not.exist(err);
-                            res.body.email.should.eql(testObject.email);
-                            res.body.status.should.eql(patchStatus);
                             // GET
                             var _getUrl = `/${_testModel.name}/${_recordId}`;
                             // console.log("GET URL: ", _getUrl);

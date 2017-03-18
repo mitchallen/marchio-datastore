@@ -48,29 +48,15 @@ module.exports.create = ( spec ) => {
                     return;
                 }
 
-                const query = ds.createQuery( model.name )
-                    .filter('__key__', '=', ds.key([ model.name, dbId]))
-                    .limit(1);
+                var key = ds.key( [ model.name, dbId ] );
 
-                ds.runQuery(query)
-                .then((results) => {
-                    const records = results[0];
-                    if(records.length === 0 ) {
-                        eMsg = `### '${dbId}' not found`;
-                        console.log(eMsg);
-                        res
-                            .status(404)
-                            .json({ error: eMsg });
-                        return;
-                    }
+                const transaction = ds.transaction();
+                transaction.run() 
+                // .then( () => Promise.all([ transaction.get(key) ] ))
+                .then( () => transaction.get(key))
+                .then( function(result) {
 
-                    var list = [];
-                    records.forEach((record) => {
-                        const recordKey = record[ds.KEY];
-                        list.push(record);
-                    });
-
-                    var source = list[0];   // original record
+                    var source = result[0];   // original record
                     jsonpatch.apply(source, patches);
                     var key = ds.key( [ model.name, dbId ] );
                     var patchedRecord = dsRecord.build( model.fields, source );
@@ -81,25 +67,23 @@ module.exports.create = ( spec ) => {
                       data: patchedRecord
                     };
 
-                    ds.save(entity).then(function(data) {
+                    transaction.save(entity);
+                })
+                .then( () => transaction.commit() )
+                .then( () => {
 
-                        entity.data._id = key.id;
+                    res
+                        .location("/" + key.path.join('/') )  // .location("/" + model + "/" + doc._id)
+                        .status(204)    // Not returning data    
+                        .end();
 
-                        var record = entity.data || entity;
-
-                        res
-                            .location("/" + key.path.join('/') )  // .location("/" + model + "/" + doc._id)
-                            .status(200)    // Not returning data
-                            .json(record);
-
-                    }).catch( function(err) { 
-                        console.error(err); 
-                        if(err) {
-                            res
-                                .status(500)
-                                .json(err);
-                        } 
-                    });
+                })
+                .catch( (err) => {
+                    // console.log("TRANSACTION ERROR: ", err);
+                    transaction.rollback();
+                    res
+                        .status(404)    // Error may simply indicate entity not found
+                        .end();
                 });
             };
             

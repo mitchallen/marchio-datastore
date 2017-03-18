@@ -83,13 +83,7 @@ module.exports.create = ( spec ) => {
                       data: merged
                     };
 
-                    return ds.save(entity).then(function(data) {
-
-                        entity.data._id = key.id;
-
-                        var record = entity.data || entity;
-
-                    });
+                    transaction.save(entity);
                 })
                 .then( () => transaction.commit() )
                 .then( () => {
@@ -97,7 +91,7 @@ module.exports.create = ( spec ) => {
                     res
                         .location("/" + key.path.join('/') )  // .location("/" + model + "/" + doc._id)
                         .status(204)    // Not returning data
-                        .json(record);
+                        .end();
 
                 })
                 .catch( (err) => {

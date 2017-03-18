@@ -154,6 +154,11 @@ Add unit tests for any new or changed functionality. Lint and test your code.
 
 ## Version History
 
+#### Version 0.1.7
+
+* HTTP PATCH now uses transaction for better record integrity
+* Fixed issue where PUT was saving on datastore and not transaction
+
 #### Version 0.1.6
 
 * HTTP PUT can now handle partial updates
