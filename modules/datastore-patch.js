@@ -25,41 +25,23 @@ module.exports.create = ( spec ) => {
                 ds = coreObject.ds,
                 router = coreObject.router;
 
-            var getDB = function(req, res, next) {
+            var patchDB = function(req, res, next) {
 
-                var eMsg = '';
-                if( req.params.model !== model.name ) {
-                    eMsg = `### ERROR: '${req.params.model}' is not a valid database model`;
-                    console.log(eMsg);
-                    res
-                        .status(404)
-                        .json({ error: eMsg });
-                    return;
-                }
+                const patches = req.body,
+                      dbId = req.params._id,  // set by validateParams
+                      key = ds.key( [ model.name, dbId ] ),
+                      transaction = ds.transaction();
 
-                var patches = req.body;
-                var dbId = parseInt(req.params.id, 10) || -1;
-                if( dbId === -1 ) {
-                    eMsg = `### ERROR: '${req.params.id}' is not a valid id`;
-                    console.log(eMsg);
-                    res
-                        .status(404)
-                        .json({ error: eMsg });
-                    return;
-                }
-
-                var key = ds.key( [ model.name, dbId ] );
-
-                const transaction = ds.transaction();
                 transaction.run() 
                 // .then( () => Promise.all([ transaction.get(key) ] ))
                 .then( () => transaction.get(key))
                 .then( function(result) {
 
-                    var source = result[0];   // original record
+                    const source = result[0];   // original record
                     jsonpatch.apply(source, patches);
-                    var key = ds.key( [ model.name, dbId ] );
-                    var patchedRecord = dsRecord.build( model.fields, source );
+                    
+                    const key = ds.key( [ model.name, dbId ] ),
+                          patchedRecord = dsRecord.build( model.fields, source );
 
                     var entity = {
                       key: key,
@@ -87,7 +69,11 @@ module.exports.create = ( spec ) => {
                 });
             };
             
-            router.patch( '/:model/:id', getDB );
+            router.patch( 
+                '/:model/:id', 
+                dsCore.validateParams( { model: model, demandId: true } ),
+                patchDB 
+            );
 
             resolve(router);
         });

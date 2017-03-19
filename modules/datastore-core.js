@@ -11,13 +11,14 @@
 const bodyParser = require('body-parser'),
       datastore = require('@google-cloud/datastore');
 
-function validateParams(model) {
+module.exports.validateParams = function( spec ) {
+
+    spec = spec || {};
+    const model = spec.model,
+          demandId = spec.demandId || false;
+
     return function(req, res, next) {
         var eMsg = '';
-
-        // console.log(`req.params.model: ${req.params.model}`);
-
-        // console.log("CORE-PARAMS:", req.params );
 
         if( req.params.model !== model.name ) {
             eMsg = `### ERROR: '${req.params.model}'' is not a valid database model`;
@@ -28,11 +29,27 @@ function validateParams(model) {
             return next('route');
         }
 
+        if( demandId ) {
+
+            // var dbId = req.params.id;    // would go in as 'name' and not 'id' (because it's a string)
+            var dbId = parseInt( req.params.id, 10 ) || -1;
+
+            if( dbId === -1 ) {
+                // Invalid id format
+                eMsg = `### ERROR: '${req.params.id}' is not a valid id`;
+                // console.error(eMsg);
+                res
+                    .status(404)
+                    .json({ error: eMsg });
+                return;
+            }
+
+            req.params._id = dbId;
+        }
+
         next();
     };
-}
-
-module.exports.validateParams = validateParams;
+};
 
 module.exports.create = ( spec ) => {
 
@@ -71,8 +88,6 @@ module.exports.create = ( spec ) => {
         if(middleware) {
             router.use(middleware);
         }
-
-        // router.use(validateParams(model.name));
 
         resolve({
             model: model,

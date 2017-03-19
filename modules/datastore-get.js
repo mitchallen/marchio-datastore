@@ -28,26 +28,7 @@ module.exports.create = ( spec ) => {
 
                 var eMsg = '';
 
-                if( req.params.model !== model.name ) {
-                    eMsg = `### ERROR: '${req.params.model}' is not a valid database model`;
-                    // console.error(eMsg);
-                    res
-                        .status(404)
-                        .json({ error: eMsg });
-                    return;
-                }
-
-                var dbId = parseInt(req.params.id, 10) || -1;
-
-                if( dbId === -1 ) {
-                    // Invalid id format
-                    eMsg = `### ERROR: '${req.params.id}' is not a valid id`;
-                    // console.error(eMsg);
-                    res
-                        .status(404)
-                        .json({ error: eMsg });
-                    return;
-                }
+                var dbId = req.params._id;  // set by validateParams
 
                 var query = ds.createQuery( model.name )
                     .filter('__key__', '=', ds.key([ model.name, dbId]))
@@ -104,10 +85,13 @@ module.exports.create = ( spec ) => {
                             .json(err);
                     } 
                 });
-
             };
 
-            router.get( '/:model/:id', getDB );
+            router.get( 
+                '/:model/:id', 
+                dsCore.validateParams( { model: model, demandId: true } ),
+                getDB 
+            );
 
             resolve(router);
         });

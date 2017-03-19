@@ -26,9 +26,8 @@ module.exports.create = ( spec ) => {
 
             var updateDB = function(req, res, next) {
 
-                var eMsg = '';
-
-                var record = dsRecord.build( model.fields, req.body );
+                var eMsg = '',
+                    record = dsRecord.build( model.fields, req.body );
 
                 if( ! record ) {
                     eMsg = `### ERROR: request fields failed validation`;
@@ -39,26 +38,9 @@ module.exports.create = ( spec ) => {
                     return;
                 }
 
-                // For a PUT operation
-                // var dbId = req.params.id;    // would go in as 'name' and not 'id' (because it's a string)
-                var dbId = parseInt( req.params.id, 10 ) || -1;
-
-                if( dbId === -1 ) {
-
-                    // Invalid id format
-                    eMsg = `### ERROR: '${req.params.id}' is not a valid id`;
-                    // console.error(eMsg);
-                    res
-                        .status(404)
-                        .json({ error: eMsg });
-                    return;
-                }
-
-                var key = ds.key( [ model.name, dbId ] );
-
-                // console.log("KEY: ", key);
-
-                const transaction = ds.transaction();
+                const dbId = req.params._id,  // set by validateParams
+                      key = ds.key( [ model.name, dbId ] ),
+                      transaction = ds.transaction();
 
                 transaction.run() 
                 // .then( () => Promise.all([ transaction.get(key) ] ))
@@ -67,7 +49,7 @@ module.exports.create = ( spec ) => {
 
                     // Merge old record (target) with new record (record)
 
-                    let target = result[0];
+                    const target = result[0];
 
                     if( target === undefined ) {
                         return Promise.reject(`No record found for id: ${dbId}`);
@@ -75,7 +57,7 @@ module.exports.create = ( spec ) => {
 
                     const merged = Object.assign(target, record);
 
-                    var entity = {
+                    const entity = {
                       key: key,
                       method: 'update',     // does not do partial update
                       // method: 'insert',  // will get already exists - can use in POST
@@ -104,9 +86,11 @@ module.exports.create = ( spec ) => {
                 
             };
             
-            router.put( '/:model/:id', dsCore.validateParams(model), updateDB );
-
-            // router.post( '/:model', saveDB );
+            router.put( 
+                '/:model/:id', 
+                dsCore.validateParams( { model: model, demandId: true } ), 
+                updateDB 
+            );
 
             resolve(router);
         });

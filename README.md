@@ -154,6 +154,11 @@ Add unit tests for any new or changed functionality. Lint and test your code.
 
 ## Version History
 
+#### Version 0.1.8
+
+* Refactored code
+* Moved model / id validation to core
+
 #### Version 0.1.7
 
 * HTTP PATCH now uses transaction for better record integrity

@@ -27,29 +27,13 @@ module.exports.create = ( spec ) => {
 
                 var eMsg = '';
 
-                if( req.params.model !== model.name ) {
-                    eMsg = `### ERROR: '${req.params.model}'' is not a valid database model`;
-                    console.error(eMsg);
-                    res
-                        .status(404)
-                        .json({ error: eMsg });
-                    return;
-                }
+                const dbId = req.params._id;  // set by validateParams
 
-                var _id = parseInt(req.params.id, 10) || -1;
-
-                if( _id === -1 ) {
-                    res
-                        .status(200)
-                        .end();
-                    return;
-                }
-
-                ds.delete(ds.key([ model.name, _id]))
+                ds.delete(ds.key([ model.name, dbId ]))
                 .then((results) => {
                     res
                         .status(200)    
-                        .json({ status: "OK" });
+                        .end();
 
                 }).catch( function(err) { 
                     console.error(err); 
@@ -59,10 +43,13 @@ module.exports.create = ( spec ) => {
                             .json(err);
                     } 
                 });
-
             };
             
-            router.delete( '/:model/:id', delDB );
+            router.delete( 
+                '/:model/:id', 
+                dsCore.validateParams( { model: model, demandId: true } ),
+                delDB 
+            );
 
             resolve(router);
         });

@@ -650,7 +650,6 @@ describe('module factory smoke test', () => {
                         .expect(200)
                         .end(function (err, res) {
                             should.not.exist(err);
-                            res.body.status.should.eql("OK");
                             // GET (make sure it's gone - expect 404)
                             var _getUrl = `/${_testModel.name}/${_recordId}`;
                             // console.log("GET URL: ", _getUrl);
@@ -717,7 +716,7 @@ describe('module factory smoke test', () => {
         });
     });
 
-    it('delete for a non-numeric id should return 200', done => {
+    it('delete for a non-numeric id should return 404', done => {
         _factory.create({
             projectId: GOOGLE_TEST_PROJECT,
             model: _testModel,
@@ -747,7 +746,7 @@ describe('module factory smoke test', () => {
             // console.log("DEL URL: ", _delUrl);
             request(_testHost)
                 .del(_delUrl)
-                .expect(200)
+                .expect(404)
                 .end(function (err, res) {
                     should.not.exist(err);
                     done();
