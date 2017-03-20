@@ -40,7 +40,72 @@ It takes one spec parameter that must be an object with named parameters
 | spec.del | <code>boolean</code> | Allow HTTP DELETE |
 | spec.patch | <code>boolean</code> | Allow HTTP PATCH |
 
-**Example** *(Usage example)*  
+**Example** *(Environment setup)*  
+```js
+$ export MARCHIO_GOOGLE_PROJECT_ID='my-project-id'
+$ export MARCHIO_PORT=8080
+```
+**Example** *(Child app of marchio example)*  
+```js
+"use strict";
+ 
+var factory = require("marchio"),
+    datastore = require('marchio-datastore');
+ 
+const GOOGLE_PROJECT_ID = process.env.MARCHIO_GOOGLE_PROJECT_ID,
+      PORT = process.env.MARCHIO_PORT || 8080;
+ 
+var _testModel = {
+    name: 'user',
+    fields: {
+        email:    { type: String, required: true },
+        status:   { type: String, required: true, default: "NEW" }, 
+    }
+}
+
+var _marchio = null;
+ 
+factory.create({
+    verbose: true
+})
+.then( (obj) => _marchio = obj )
+.then( () => 
+   datastore.create({
+        projectId: GOOGLE_PROJECT_ID,
+        model: _testModel,
+        post: true,
+        get: true,
+        put: true,
+        del: true,
+        patch: true
+    })
+)
+.then( (dsApp) => _marchio.use(dsApp) )
+.then( () => _marchio.listen( PORT ) )
+.catch( (err) => { 
+   console.error(err); 
+}); 
+```
+**Example** *(curl testing)*  
+```js
+$ curl -i -X POST -H "Content-Type: application/json" \
+    -d '{"email":"test@demo.com"}' http://localhost:8080/user
+
+$ curl -i -X GET -H "Accept: applications/json" \
+    http://localhost:8080/user/1234567890123456
+
+$ curl -i -X PUT -H "Content-Type: application/json" \
+    -d '{"email":"test@demo.com", "status":"UPDATED"}' \
+    http://localhost:8080/user/1234567890123456
+
+$ curl -i -X PATCH -H "Content-Type: application/json" \
+    -d '[{"op":"replace","path":"/status","value":"PATCH"}]' \
+    http://localhost:8080/user/1234567890123456
+
+$ curl -i -X DELETE -H "Content-Type: application/json" \
+    http://localhost:8080/user/1234567890123456
+```
+**Example** *(Main app example)*  
 ```js
 var factory = require("marchio-datastore");
 
@@ -52,7 +117,6 @@ var _testModel = {
     fields: {
         email:    { type: String, required: true },
         status:   { type: String, required: true, default: "NEW" },
-        // In a real world example this would have been hashed in middleware and not stored as plain text
         password: { type: String, select: false },  // select: false, exclude from query results
     }
 };
