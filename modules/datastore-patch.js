@@ -71,7 +71,6 @@ module.exports.create = ( spec ) => {
             
             router.patch( 
                 '/:model/:id', 
-                dsCore.validateParams( { model: model, demandId: true } ),
                 patchDB 
             );
 

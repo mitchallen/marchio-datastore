@@ -47,7 +47,6 @@ module.exports.create = ( spec ) => {
             
             router.delete( 
                 '/:model/:id', 
-                dsCore.validateParams( { model: model, demandId: true } ),
                 delDB 
             );
 

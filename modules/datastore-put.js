@@ -88,7 +88,6 @@ module.exports.create = ( spec ) => {
             
             router.put( 
                 '/:model/:id', 
-                dsCore.validateParams( { model: model, demandId: true } ), 
                 updateDB 
             );
 

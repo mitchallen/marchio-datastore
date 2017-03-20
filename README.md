@@ -154,6 +154,10 @@ Add unit tests for any new or changed functionality. Lint and test your code.
 
 ## Version History
 
+#### Version 0.1.9
+
+* Refactored code to use router.param instead of custom callback
+
 #### Version 0.1.8
 
 * Refactored code

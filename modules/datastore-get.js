@@ -89,7 +89,6 @@ module.exports.create = ( spec ) => {
 
             router.get( 
                 '/:model/:id', 
-                dsCore.validateParams( { model: model, demandId: true } ),
                 getDB 
             );
 

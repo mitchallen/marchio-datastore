@@ -69,7 +69,6 @@ module.exports.create = ( spec ) => {
             
             router.post( 
                 '/:model', 
-                dsCore.validateParams( { model: model } ), 
                 saveDB 
             );
 
