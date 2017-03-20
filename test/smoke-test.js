@@ -284,6 +284,46 @@ describe('module factory smoke test', () => {
         });
     });
 
+    it('post with invalid model name in url should return 404', done => {
+        _factory.create({
+            projectId: GOOGLE_TEST_PROJECT,
+            model: _testModel,
+            post: true
+        })
+        .then(function(app) {
+           _server = app.listen(TEST_PORT, () => {
+               // console.log(`listening on port ${TEST_PORT}`);   
+           });
+           killable(_server);
+           return Promise.resolve(true);
+        })
+        .then( () => {
+
+            var testObject = {
+                email: "test" + getRandomInt( 1000, 1000000) + "@smoketest.cloud",
+                password: "fubar"
+            };
+
+            // console.log(`TEST HOST: ${_testHost} `);
+
+            var _invalidPostUrl = "/bogus";
+
+            request(_testHost)
+                .post(_invalidPostUrl)
+                .send(testObject)
+                .set('Content-Type', 'application/json')
+                .expect(404)
+                .end(function (err, res) {
+                    done();
+                });
+
+        })
+        .catch( function(err) { 
+            console.error(err); 
+            done(err);  // to pass on err, remove err (done() - no arguments)
+        });
+    });
+
     it('get should succeed', done => {
         _factory.create({
             projectId: GOOGLE_TEST_PROJECT,

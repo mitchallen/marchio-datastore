@@ -49,8 +49,8 @@ module.exports.create = ( spec ) => {
             var eMsg = '';
 
             if( req.params.model !== model.name ) {
-                eMsg = `### ERROR: '${req.params.model}'' is not a valid database model`;
-                console.error(eMsg);
+                eMsg = `### ERROR: '${req.params.model}' is not a valid database model`;
+                // console.error(eMsg);
                 res
                     .status(404)
                     .json({ error: eMsg });
