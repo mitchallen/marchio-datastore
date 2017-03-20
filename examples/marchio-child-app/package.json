@@ -1,0 +1,15 @@
+{
+  "name": "marchio-child-app",
+  "version": "1.0.0",
+  "description": "Using marchio-datastore as a child app of marchio",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Mitch Allen",
+  "license": "MIT",
+  "dependencies": {
+    "marchio": "^0.1.17",
+    "marchio-datastore": "^0.1.10"
+  }
+}
