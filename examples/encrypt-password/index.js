@@ -20,8 +20,6 @@ var _testModel = {
 var hashPassword = function(req, res, next) {
     var eMsg = '';
 
-    console.log("REQUEST METHOD: ", req.method );
-
     if( ! req.body ) {
         eMsg = "### ERROR: request has no body parameter";
         console.error(eMsg);
@@ -66,7 +64,7 @@ factory.create({
    datastore.create({
         projectId: GOOGLE_PROJECT_ID,
         model: _testModel,
-        post: { use: hashPassword },
+        post: { preprocess: hashPassword },
         get: true,
         put: true,
         del: true,

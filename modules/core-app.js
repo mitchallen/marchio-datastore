@@ -79,10 +79,8 @@ module.exports.create = ( spec ) => {
             app.use(middleware);
         }
 
-        resolve({
-            model: model,
-            projectId: projectId,
-            app: app
-        });
+        spec.app = app;
+
+        resolve(spec);
     });
 };

@@ -144,7 +144,6 @@ module.exports.create = ( spec ) => {
         var model = coreObject.model,
             projectId = coreObject.projectId,
             middleware = coreObject.use,
-            preprocess = coreObject.preprocess,
             ds = coreObject.ds,
             app = coreObject.app,   
             post = spec.post || false,
@@ -153,26 +152,15 @@ module.exports.create = ( spec ) => {
             del = spec.del || false,
             patch = spec.patch || false;
 
-        // console.log(spec);
-
         model.fields = model.fields || {};
-
-        // const ds = datastore({
-        //     projectId: projectId
-        // });
-
-        // Automatically parse request body as JSON
-        // app.use(bodyParser.json());
-        // if( middleware ) {
-        //     app.use(middleware);
-        // }
 
         var routes = [];
 
         var routeSpec = function( rParams ) {
+
             return { 
                 projectId: projectId, model: model, 
-                preprocess: ( rParams instanceof Object ) ? rParams.preprocess : null 
+                preprocess: rParams.preprocess ? rParams.preprocess : null 
             };
         };
 
@@ -194,7 +182,6 @@ module.exports.create = ( spec ) => {
             resolve(app);
         })
         .catch( function(err) { 
-            // console.error(err); 
             console.error(`datastore: ${err.message}`);
             reject(err);
         });

@@ -1,4 +1,5 @@
-var factory = require("marchio-datastore");
+// var factory = require("marchio-datastore");
+var factory = require("../../modules/index");
 
 const GOOGLE_PROJECT_ID = process.env.MARCHIO_GOOGLE_PROJECT_ID,
       PORT = process.env.MARCHIO_PORT || 8080;

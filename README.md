@@ -226,6 +226,11 @@ Add unit tests for any new or changed functionality. Lint and test your code.
 
 ## Version History
 
+#### Version 0.1.12
+
+* Implemented preprocess setting on microservice cores
+* Added preprocess password encryption example
+
 #### Version 0.1.11
 
 * Microservice cores now use app instead of router
