@@ -11,6 +11,6 @@
   "dependencies": {
     "bcrypt": "^1.0.2",
     "marchio": "^0.1.17",
-    "marchio-datastore": "^0.1.11"
+    "marchio-datastore": "^0.1.12"
   }
 }

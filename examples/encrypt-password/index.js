@@ -2,8 +2,8 @@
  
 var factory = require("marchio"),
     bcrypt = require('bcrypt'),
-    // datastore = require('marchio-datastore');
-    datastore = require('../../modules/index');
+    datastore = require('marchio-datastore');
+    // datastore = require('../../modules/index');
  
 const GOOGLE_PROJECT_ID = process.env.MARCHIO_GOOGLE_PROJECT_ID,
       PORT = process.env.MARCHIO_PORT || 8080;

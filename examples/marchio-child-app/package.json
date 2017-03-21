@@ -10,6 +10,6 @@
   "license": "MIT",
   "dependencies": {
     "marchio": "^0.1.17",
-    "marchio-datastore": "^0.1.10"
+    "marchio-datastore": "^0.1.12"
   }
 }
