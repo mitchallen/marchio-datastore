@@ -26,7 +26,7 @@ var hashPassword = function(req, res, next) {
         res
             .status(404)
             .json({ error: eMsg });
-        return next('route');
+        return next();
     }
 
     if( ! req.body.password ) {
@@ -35,7 +35,7 @@ var hashPassword = function(req, res, next) {
         res
             .status(404)
             .json({ error: eMsg });
-        return next('route');
+        return;
     }
 
     bcrypt.hash(req.body.password, 10, function (err, hash) {
@@ -45,7 +45,7 @@ var hashPassword = function(req, res, next) {
             res
                 .status(404)
                 .json({ error: err.message });
-                return next('route');
+            return;
         }
 
         req.body.password = hash;
