@@ -123,7 +123,7 @@ var _testModel = {
 
 factory.create({
     model: _testModel,
-    projectId: GOOGLE_PROJECT_ID
+    projectId: GOOGLE_PROJECT_ID,
     post: true,
     get: true,
     put: true,

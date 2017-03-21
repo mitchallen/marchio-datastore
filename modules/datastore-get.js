@@ -20,9 +20,9 @@ module.exports.create = ( spec ) => {
 
             var model = coreObject.model,
                 projectId = coreObject.projectId,
-                middleware = coreObject.use,
+                preprocess = coreObject.preprocess,
                 ds = coreObject.ds,
-                router = coreObject.router;
+                app = coreObject.app;
 
             var getDB = function(req, res, next) {
 
@@ -87,12 +87,15 @@ module.exports.create = ( spec ) => {
                 });
             };
 
-            router.get( 
-                '/:model/:id', 
-                getDB 
-            );
+            var path = '/:model/:id';
 
-            resolve(router);
+            if( preprocess ) {
+                app.get( path, preprocess, getDB );
+            } else {
+                app.get( path, getDB );
+            }
+
+            resolve(app);
         });
     });
 };

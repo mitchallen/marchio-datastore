@@ -19,9 +19,9 @@ module.exports.create = ( spec ) => {
 
             var model = coreObject.model,
                 projectId = coreObject.projectId,
-                middleware = coreObject.use,
+                preprocess = coreObject.preprocess,
                 ds = coreObject.ds,
-                router = coreObject.router;
+                app = coreObject.app;
 
             var delDB = function(req, res, next) {
 
@@ -34,6 +34,7 @@ module.exports.create = ( spec ) => {
                     res
                         .status(200)    
                         .end();
+                    return next();
 
                 }).catch( function(err) { 
                     console.error(err); 
@@ -42,15 +43,19 @@ module.exports.create = ( spec ) => {
                             .status(500)
                             .json(err);
                     } 
+                    return next();
                 });
             };
-            
-            router.delete( 
-                '/:model/:id', 
-                delDB 
-            );
 
-            resolve(router);
+            var path = '/:model/:id';
+
+            if( preprocess ) {
+                app.delete( path, preprocess, delDB );
+            } else {
+                app.delete( path, delDB );
+            }
+
+            resolve(app);
         });
     });
 };

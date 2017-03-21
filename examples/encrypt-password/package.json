@@ -1,0 +1,16 @@
+{
+  "name": "encrypt-password",
+  "version": "1.0.0",
+  "description": "Demo encrypting a password before inserting it into the database",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Mitch Allen",
+  "license": "MIT",
+  "dependencies": {
+    "bcrypt": "^1.0.2",
+    "marchio": "^0.1.17",
+    "marchio-datastore": "^0.1.10"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "name": "main-app",
+  "version": "1.0.0",
+  "description": "Demo using mario-datastore as the main app",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Mitch Allen",
+  "license": "MIT",
+  "dependencies": {
+    "marchio-datastore": "^0.1.10"
+  }
+}

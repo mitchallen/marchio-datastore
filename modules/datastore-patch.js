@@ -21,9 +21,9 @@ module.exports.create = ( spec ) => {
 
             var model = coreObject.model,
                 projectId = coreObject.projectId,
-                middleware = coreObject.use,
+                preprocess = coreObject.preprocess,
                 ds = coreObject.ds,
-                router = coreObject.router;
+                app = coreObject.app;
 
             var patchDB = function(req, res, next) {
 
@@ -69,12 +69,15 @@ module.exports.create = ( spec ) => {
                 });
             };
             
-            router.patch( 
-                '/:model/:id', 
-                patchDB 
-            );
+            var path = '/:model/:id';
 
-            resolve(router);
+            if( preprocess ) {
+                app.patch( path, preprocess, patchDB );
+            } else {
+                app.patch( path, patchDB );
+            }
+
+            resolve(app);
         });
     });
 };

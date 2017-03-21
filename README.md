@@ -161,7 +161,7 @@ var _testModel = {
 
 factory.create({
     model: _testModel,
-    projectId: GOOGLE_PROJECT_ID
+    projectId: GOOGLE_PROJECT_ID,
     post: true,
     get: true,
     put: true,
@@ -225,6 +225,10 @@ Add unit tests for any new or changed functionality. Lint and test your code.
 * * *
 
 ## Version History
+
+#### Version 0.1.11
+
+* Microservice cores now use app instead of router
 
 #### Version 0.1.10
 

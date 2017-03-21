@@ -8,7 +8,7 @@
 
 "use strict";
 
-const   coreRouter = require('./core-router'),
+const   coreRouter = require('./core-app'),
         datastore = require('@google-cloud/datastore');
 
 module.exports.create = ( spec ) => {
@@ -18,22 +18,15 @@ module.exports.create = ( spec ) => {
 
         return new Promise((resolve, reject) => {
 
-            var model = coreObject.model,
-                projectId = coreObject.projectId,
-                middleware = coreObject.use,
-                // ds = coreObject.ds,
-                router = coreObject.router;
+            spec = spec || {};
 
-            const ds = datastore({
+            const projectId = spec.projectId;
+
+            coreObject.ds = datastore({
                 projectId: projectId
             });
 
-            resolve({
-                model: model,
-                projectId: projectId,
-                ds: ds,
-                router: router
-            });
+            resolve(coreObject);
         });
     });
 };

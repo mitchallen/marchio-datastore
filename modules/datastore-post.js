@@ -21,8 +21,9 @@ module.exports.create = ( spec ) => {
             var model = coreObject.model,
                 projectId = coreObject.projectId,
                 middleware = coreObject.use,
+                preprocess = coreObject.preprocess,
                 ds = coreObject.ds,
-                router = coreObject.router;
+                app = coreObject.app;
 
             var saveDB = function(req, res, next) {
 
@@ -56,6 +57,7 @@ module.exports.create = ( spec ) => {
                         .location("/" + key.path.join('/') )  // .location("/" + model + "/" + doc._id)
                         .status(201)    // Created
                         .json(response);
+                    return;
 
                 }).catch( function(err) { 
                     console.error(err); 
@@ -63,17 +65,20 @@ module.exports.create = ( spec ) => {
                         res
                             .status(500)
                             .json(err);
+                        return next();
                     } 
                 });
             };
-            
-            router.post( 
-                '/:model', 
-                saveDB 
-            );
 
+            var path = '/:model';
 
-            resolve(router);
+            if( preprocess ) {
+                app.post( path, preprocess, saveDB );
+            } else {
+                app.post( path, saveDB );
+            }
+
+            resolve(app);
         });
 
     });

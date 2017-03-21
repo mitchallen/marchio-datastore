@@ -1,5 +1,5 @@
 /**
-    Module: core-router.js
+    Module: core-app.js
     Author: Mitch Allen
 */
 
@@ -15,7 +15,7 @@ module.exports.create = ( spec ) => {
     return new Promise((resolve, reject) => {
 
         const express = require('express'),
-              router = express.Router();
+              app = express();
       
         spec = spec || {};
 
@@ -38,9 +38,9 @@ module.exports.create = ( spec ) => {
         model.fields = model.fields || {};
 
         // Automatically parse request body as JSON
-        router.use(bodyParser.json());
+        app.use(bodyParser.json());
 
-        router.param('model', function(req, res, next) {
+        app.param('model', function(req, res, next) {
             var eMsg = '';
 
             if( req.params.model !== model.name ) {
@@ -49,13 +49,13 @@ module.exports.create = ( spec ) => {
                 res
                     .status(404)
                     .json({ error: eMsg });
-                return next('route');
+                return; // on error do NOT call next
             }
 
             next();
         });
 
-        router.param('id', function(req, res, next) {
+        app.param('id', function(req, res, next) {
 
             // var dbId = req.params.id;    // would go in as 'name' and not 'id' (because it's a string)
             var dbId = parseInt( req.params.id, 10 ) || -1;
@@ -67,7 +67,7 @@ module.exports.create = ( spec ) => {
                 res
                     .status(404)
                     .json({ error: eMsg });
-                return next('route');
+                return; // on error do NOT call next
             }
 
             req.params._id = dbId;
@@ -76,13 +76,13 @@ module.exports.create = ( spec ) => {
         });
 
         if(middleware) {
-            router.use(middleware);
+            app.use(middleware);
         }
 
         resolve({
             model: model,
             projectId: projectId,
-            router: router
+            app: app
         });
     });
 };

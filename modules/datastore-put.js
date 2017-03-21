@@ -20,9 +20,9 @@ module.exports.create = ( spec ) => {
 
             var model = coreObject.model,
                 projectId = coreObject.projectId,
-                middleware = coreObject.use,
+                preprocess = coreObject.preprocess,
                 ds = coreObject.ds,
-                router = coreObject.router;
+                app = coreObject.app;
 
             var updateDB = function(req, res, next) {
 
@@ -35,7 +35,7 @@ module.exports.create = ( spec ) => {
                     res
                         .status(404)
                         .json({ error: eMsg });
-                    return;
+                    return next();
                 }
 
                 const dbId = req.params._id,  // set by validateParams
@@ -74,6 +74,7 @@ module.exports.create = ( spec ) => {
                         .location("/" + key.path.join('/') )  // .location("/" + model + "/" + doc._id)
                         .status(204)    // Not returning data
                         .end();
+                    return;
 
                 })
                 .catch( (err) => {
@@ -82,16 +83,20 @@ module.exports.create = ( spec ) => {
                     res
                         .status(404)    // Error may simply indicate entity not found
                         .end();
+                    return;
                 });
                 
             };
             
-            router.put( 
-                '/:model/:id', 
-                updateDB 
-            );
+            var path = '/:model/:id';
 
-            resolve(router);
+            if( preprocess ) {
+                app.put( path, preprocess, updateDB );
+            } else {
+                app.put( path, updateDB );
+            }
+
+            resolve(app);
         });
 
     });
