@@ -1,6 +1,6 @@
 {
   "name": "marchio-datastore",
-  "version": "0.1.10",
+  "version": "0.1.11",
   "description": "REST to Google Datastore Mapper",
   "main": "modules/index.js",
   "scripts": {
