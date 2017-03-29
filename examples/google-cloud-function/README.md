@@ -41,7 +41,7 @@ Note in the response the Location / id and integrate it into a curl GET command.
 
 ```
 $ curl -i -X GET -H "Accept: applications/json" \
-  http://localhost:8080/user/1234567890123456
+  http://localhost:8080/betalist/1234567890123456
 ```
 
 You can also review the Entities to see the new record here:
