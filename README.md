@@ -226,6 +226,10 @@ Add unit tests for any new or changed functionality. Lint and test your code.
 
 ## Version History
 
+#### Version 0.1.13
+
+* Added a Google Cloud Function example
+
 #### Version 0.1.12
 
 * Implemented preprocess setting on microservice cores

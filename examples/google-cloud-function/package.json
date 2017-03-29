@@ -1,0 +1,16 @@
+{
+  "name": "google-cloud-function-example",
+  "version": "1.0.0",
+  "description": "Demo of how to use marchio-datastore in a google cloud function\"",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "test-local-post": "curl -i -X POST -H \"Content-Type: application/json\" -d '{\"email\":\"func-local@funky.com\"}' http://localhost:8080/betalist/"
+  },
+  "author": "Mitch Allen (http://mitchallen.com)",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.15.2",
+    "marchio-datastore": "^0.1.12"
+  }
+}
