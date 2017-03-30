@@ -17,8 +17,8 @@
  *     FUNCTION_NAME = myfunc
  *     MODEL_NAME = betalist
  *  
- * $ curl -i -X POST -H \"Content-Type: application/json\" \
- *        -d '{\"email\":\"func@funky.com\"}' \
+ * $ curl -i -X POST -H "Content-Type: application/json" \
+ *        -d '{"email":"func@funky.com"}' \
  *        https://us-central1-myproject.cloudfunctions.net/myfunc/betalist/
  *
  * Take note of the location info in the response:
