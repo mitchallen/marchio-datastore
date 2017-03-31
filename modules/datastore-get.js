@@ -73,7 +73,7 @@ module.exports.create = ( spec ) => {
                     response._id = dbId;
 
                     res
-                        .location("/" + [ model.name, dbId ].join('/') )  // .location("/" + model + "/" + doc._id)
+                        .location( req.baseUrl + "/" + [ model.name, dbId ].join('/') )  // .location("/" + model + "/" + doc._id)
                         .status(200)    
                         .json(response);
 

@@ -71,7 +71,7 @@ module.exports.create = ( spec ) => {
                 .then( () => {
 
                     res
-                        .location("/" + key.path.join('/') )  // .location("/" + model + "/" + doc._id)
+                        .location( req.baseUrl + "/" + key.path.join('/') )  // .location("/" + model + "/" + doc._id)
                         .status(204)    // Not returning data
                         .end();
                     return;

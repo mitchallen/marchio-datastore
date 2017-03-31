@@ -34,11 +34,12 @@ It takes one spec parameter that must be an object with named parameters
 | Param | Type | Description |
 | --- | --- | --- |
 | spec | <code>Object</code> | Named parameters object |
-| spec.post | <code>boolean</code> | Allow HTTP POST |
-| spec.get | <code>boolean</code> | Allow HTTP GET |
-| spec.put | <code>boolean</code> | Allow HTTP PUT |
-| spec.del | <code>boolean</code> | Allow HTTP DELETE |
-| spec.patch | <code>boolean</code> | Allow HTTP PATCH |
+| [spec.path] | <code>String</code> | Base path (like "/api" or "/v1") |
+| [spec.post] | <code>boolean</code> | Allow HTTP POST |
+| [spec.get] | <code>boolean</code> | Allow HTTP GET |
+| [spec.put] | <code>boolean</code> | Allow HTTP PUT |
+| [spec.del] | <code>boolean</code> | Allow HTTP DELETE |
+| [spec.patch] | <code>boolean</code> | Allow HTTP PATCH |
 
 **Example** *(Environment setup)*  
 ```js
@@ -138,6 +139,60 @@ factory.create({
 .catch( function(err) { 
     console.error(err); 
 });
+```
+**Example** *(Path based example)*  
+```js
+var factory = require("marchio-datastore");
+
+const GOOGLE_PROJECT_ID = process.env.MARCHIO_GOOGLE_PROJECT_ID,
+      PORT = process.env.MARCHIO_PORT || 8080;
+
+var _testModel = {
+    name: 'user',
+    fields: {
+        email:    { type: String, required: true },
+        status:   { type: String, required: true, default: "NEW" },
+        password: { type: String, select: false },  // select: false, exclude from query results
+    }
+};
+
+factory.create({
+    model: _testModel,
+    projectId: GOOGLE_PROJECT_ID,
+    path: '/api',
+    post: true,
+    get: true,
+    put: true,
+    del: true,
+    patch: true
+})
+.then(function(app) {
+    app.listen(PORT, () => {
+        console.log(`listening on port ${PORT}`);   
+    });
+})
+.catch( function(err) { 
+    console.error(err); 
+});
+```
+**Example** *(path-based curl testing)*  
+```js
+$ curl -i -X POST -H "Content-Type: application/json" \
+    -d '{"email":"test@demo.com"}' http://localhost:8080/api/user
+
+$ curl -i -X GET -H "Accept: applications/json" \
+    http://localhost:8080/api/user/1234567890123456
+
+$ curl -i -X PUT -H "Content-Type: application/json" \
+    -d '{"email":"test@demo.com", "status":"UPDATED"}' \
+    http://localhost:8080/api/user/1234567890123456
+
+$ curl -i -X PATCH -H "Content-Type: application/json" \
+    -d '[{"op":"replace","path":"/status","value":"PATCH"}]' \
+    http://localhost:8080/api/user/1234567890123456
+
+$ curl -i -X DELETE -H "Content-Type: application/json" \
+    http://localhost:8080/api/user/1234567890123456
 ```
 <a name="module_marchio-datastore-ERROR"></a>
 

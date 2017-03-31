@@ -54,7 +54,7 @@ module.exports.create = ( spec ) => {
                     response._id = key.id;
 
                     res
-                        .location("/" + key.path.join('/') )  // .location("/" + model + "/" + doc._id)
+                        .location( req.baseUrl + "/" + key.path.join('/') )  // .location("/" + model + "/" + doc._id)
                         .status(201)    // Created
                         .json(response);
                     return;

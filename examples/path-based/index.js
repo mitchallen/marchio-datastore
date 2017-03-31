@@ -15,6 +15,7 @@ var _testModel = {
 factory.create({
     model: _testModel,
     projectId: GOOGLE_PROJECT_ID,
+    path: '/api',
     post: true,
     get: true,
     put: true,
