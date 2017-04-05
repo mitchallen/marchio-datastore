@@ -31,10 +31,6 @@ module.exports.create = ( spec ) => {
             reject ( new Error(".create: model.name must be defined"));
         }
 
-        if( ! projectId ) {
-            reject( new Error(".create: projectId must be defined"));
-        }
-
         model.fields = model.fields || {};
 
         // Automatically parse request body as JSON
@@ -57,7 +53,7 @@ module.exports.create = ( spec ) => {
 
         app.param('id', function(req, res, next) {
 
-            // var dbId = req.params.id;    // would go in as 'name' and not 'id' (because it's a string)
+            // var dbId = req.params.id;    // in datastore, id would go in as 'name' and not 'id' (because it's a string)
             var dbId = parseInt( req.params.id, 10 ) || -1;
 
             if( dbId === -1 ) {
