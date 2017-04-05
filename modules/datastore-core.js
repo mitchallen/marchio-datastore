@@ -22,6 +22,10 @@ module.exports.create = ( spec ) => {
 
             const projectId = spec.projectId;
 
+            if( ! projectId ) {
+                reject( new Error(".create: projectId must be defined"));
+            }
+
             coreObject.ds = datastore({
                 projectId: projectId
             });
