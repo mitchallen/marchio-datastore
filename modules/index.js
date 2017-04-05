@@ -11,7 +11,7 @@
 const bodyParser = require('body-parser'),
       // datastore = require('@google-cloud/datastore'),
       dsCore = require('./datastore-core'),
-      coreRouter = require('./core-app'),
+      coreRouter = require('marchio-core-app'),
       postRouter = require('./datastore-post'),
       putRouter = require('./datastore-put'),
       getRouter = require('./datastore-get'),

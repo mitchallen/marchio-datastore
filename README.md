@@ -280,6 +280,10 @@ Add unit tests for any new or changed functionality. Lint and test your code.
 
 ## Version History
 
+#### Version 0.1.15
+
+* Now uses external marchio-core-app
+
 #### Version 0.1.14
 
 * Added path parameter to create method ('/api', '/v1', etc.)

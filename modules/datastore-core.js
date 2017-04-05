@@ -8,7 +8,7 @@
 
 "use strict";
 
-const   coreRouter = require('./core-app'),
+const   coreRouter = require('marchio-core-app'),
         datastore = require('@google-cloud/datastore');
 
 module.exports.create = ( spec ) => {
