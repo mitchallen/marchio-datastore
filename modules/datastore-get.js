@@ -9,7 +9,7 @@
 "use strict";
 
 const dsCore = require('./datastore-core'),
-      dsRecord = require('./datastore-record');
+      crFactory = require('marchio-core-record');
 
 module.exports.create = ( spec ) => {
 
@@ -34,23 +34,21 @@ module.exports.create = ( spec ) => {
                     .filter('__key__', '=', ds.key([ model.name, dbId]))
                     .limit(1);
 
-                ds.runQuery(query)
-                .then((results) => {
+                var recMgr = null;
 
-                    // console.log(results);
-                    // [ [ { status: 'NEW', email: 'test290686@smoketest.cloud' } ],
-                    //   { moreResults: 'NO_MORE_RESULTS',
-                    //     endCursor: 'CjASK...=' } ]
+                crFactory.create( { model: model } )
+                .then( (rm) => {
+                    recMgr = rm;
+                    return ds.runQuery(query);
+                })
+                .then( (results) => {
 
                     const records = results[0];
 
                     if(records.length === 0 ) {
-                        eMsg = `### '${dbId}' not found`;
+                        // eMsg = `### '${dbId}' not found`;
                         // console.error(eMsg);
-                        res
-                            .status(404)
-                            .json({ error: eMsg });
-                        return;
+                        return Promise.reject(404);
                     }
 
                     var list = [];
@@ -62,27 +60,36 @@ module.exports.create = ( spec ) => {
                         list.push(record);
                     });
 
-                    var response = {};
-
+                    return Promise.resolve(list[0]);
+                })
+                .then( (body) => {
+                    // console.log("BODY:", body );
                     if( req.query.fields ) {
-                        response = dsRecord.fields( req.query.fields.split(" "), list[0] );
+                        return recMgr.fields( req.query.fields.split(" "), body );
                     } else {
-                        response = dsRecord.select( model.fields, list[0] );
-                    } 
-   
+                        return recMgr.select( body );
+                    }
+                })
+                .then( (response) => {
+                    // console.log( response );
                     response._id = dbId;
-
                     res
                         .location( req.baseUrl + "/" + [ model.name, dbId ].join('/') )  // .location("/" + model + "/" + doc._id)
                         .status(200)    
                         .json(response);
 
                 }).catch( function(err) { 
-                    console.error(err); 
+                    // console.error(err); 
                     if(err) {
-                        res
-                            .status(500)
-                            .json(err);
+                        if( err === 404 ) {
+                            res
+                                .status(404)
+                                .json({ error: "not found" });
+                        } else {
+                            res
+                                .status(500)
+                                .json(err);
+                        }
                     } 
                 });
             };

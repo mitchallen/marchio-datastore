@@ -859,7 +859,6 @@ describe('module factory smoke test', () => {
                                 .expect(200)
                                 .end(function (err, res) {
                                     should.not.exist(err);
-                                    // console.log("RECORD: ", res.body);
                                     res.body.email.should.eql(testObject.email);
                                     // // Should not return password
                                     should.not.exist(res.body.password);

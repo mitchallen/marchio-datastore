@@ -9,7 +9,7 @@
 "use strict";
 
 const dsCore = require('./datastore-core');
-const dsRecord = require('./datastore-record');
+const crFactory = require('marchio-core-record');
 
 module.exports.create = ( spec ) => {
 
@@ -29,27 +29,35 @@ module.exports.create = ( spec ) => {
 
                 var eMsg = '';
 
-                const record = dsRecord.build( model.fields, req.body );
+                var recMgr = null,
+                    key = null,
+                    entity = null;
 
-                if( ! record ) {
-                    eMsg = `### ERROR: request fields failed validation`;
-                    console.error(eMsg);
-                    res
-                        .status(404)
-                        .json({ error: eMsg });
-                    return;
-                }
-
-                const key = ds.key( model.name );
-
-                const entity = {
-                  key: key,
-                  data: record
-                };
-
-                ds.save(entity).then(function(data) {
-  
-                    var response = dsRecord.select( model.fields, entity.data || entity );
+                crFactory.create( { model: model } )
+                .then( (rm) => {
+                    recMgr = rm;
+                    return recMgr.build( req.body );
+                })
+                .then( (record) => {
+                    if( ! record ) {
+                        // eMsg = `### ERROR: request fields failed validation`;
+                        // console.error(eMsg);
+                        return Promise.reject(404);
+                    }
+                    // console.log("RECORD: ", record );
+                    key = ds.key( model.name );
+                    entity = {
+                      key: key,
+                      data: record
+                    };
+                    return ds.save(entity);
+                })
+                .then( (data) => {
+                    // console.log("DATA: ", data );
+                    return recMgr.select( entity.data || entity );
+                })
+                .then( (response) => {
+                    // console.log("RESPONSE: ", response );
                     // Must call AFTER select or id will be filtered out
                     response._id = key.id;
 
@@ -57,15 +65,19 @@ module.exports.create = ( spec ) => {
                         .location( req.baseUrl + "/" + key.path.join('/') )  // .location("/" + model + "/" + doc._id)
                         .status(201)    // Created
                         .json(response);
-                    return;
 
-                }).catch( function(err) { 
-                    console.error(err); 
+                 }).catch( function(err) { 
+                    // console.error(err); 
                     if(err) {
-                        res
-                            .status(500)
-                            .json(err);
-                        return next();
+                        if( err === 404 ) {
+                            res
+                                .status(404)
+                                .json({ error: "not found" });
+                        } else {
+                            res
+                                .status(500)
+                                .json(err);
+                        }
                     } 
                 });
             };

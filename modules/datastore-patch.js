@@ -9,7 +9,7 @@
 "use strict";
 
 const dsCore = require('./datastore-core'),
-      dsRecord = require('./datastore-record'),
+      crFactory = require('marchio-core-record'),
       jsonpatch = require('fast-json-patch');
 
 module.exports.create = ( spec ) => {
@@ -27,28 +27,39 @@ module.exports.create = ( spec ) => {
 
             var patchDB = function(req, res, next) {
 
-                const patches = req.body,
-                      dbId = req.params._id,  // set by validateParams
-                      key = ds.key( [ model.name, dbId ] ),
-                      transaction = ds.transaction();
+                const patches = req.body;
 
-                transaction.run() 
+                var eMsg = '',
+                    record = null,
+                    recMgr = null,
+                    dbId = null,  
+                    key = null,
+                    transaction = null;
+
+                crFactory.create( { model: model } )
+                .then( (rm) => {
+                    recMgr = rm;
+                    dbId = req.params._id;  // set by validateParams
+                    key = ds.key( [ model.name, dbId ] );
+                    transaction = ds.transaction();
+                    return transaction.run();
+                }) 
                 // .then( () => Promise.all([ transaction.get(key) ] ))
                 .then( () => transaction.get(key))
-                .then( function(result) {
+                .then( (result) => {
 
                     const source = result[0];   // original record
                     jsonpatch.apply(source, patches);
                     
-                    const key = ds.key( [ model.name, dbId ] ),
-                          patchedRecord = dsRecord.build( model.fields, source );
-
+                    const key = ds.key( [ model.name, dbId ] );
+                    return recMgr.build( source );
+                })
+                .then( (patchedRecord) => {
                     var entity = {
                       key: key,
                       method: 'update',
                       data: patchedRecord
                     };
-
                     transaction.save(entity);
                 })
                 .then( () => transaction.commit() )

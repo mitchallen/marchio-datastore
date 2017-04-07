@@ -9,7 +9,7 @@
 "use strict";
 
 const dsCore = require('./datastore-core'),
-      dsRecord = require('./datastore-record');
+      crFactory = require('marchio-core-record');
 
 module.exports.create = ( spec ) => {
 
@@ -27,22 +27,31 @@ module.exports.create = ( spec ) => {
             var updateDB = function(req, res, next) {
 
                 var eMsg = '',
-                    record = dsRecord.build( model.fields, req.body );
+                    record = null,
+                    recMgr = null,
+                    dbId = null,  
+                    key = null,
+                    transaction = null;
 
-                if( ! record ) {
-                    eMsg = `### ERROR: request fields failed validation`;
-                    // console.error(eMsg);
-                    res
-                        .status(404)
-                        .json({ error: eMsg });
-                    return next();
-                }
+                crFactory.create( { model: model } )
+                .then( (rm) => {
+                    recMgr = rm;
+                    return recMgr.build( req.body );
+                })
+                .then( (rec) => {
+                    if( ! rec ) {
+                        // eMsg = `### ERROR: request fields failed validation`;
+                        // console.error(eMsg);
+                        return Promise.reject(404);
+                    }
 
-                const dbId = req.params._id,  // set by validateParams
-                      key = ds.key( [ model.name, dbId ] ),
-                      transaction = ds.transaction();
+                    record = rec;
 
-                transaction.run() 
+                    dbId = req.params._id;  // set by validateParams
+                    key = ds.key( [ model.name, dbId ] );
+                    transaction = ds.transaction();
+                    return transaction.run();
+                })
                 // .then( () => Promise.all([ transaction.get(key) ] ))
                 .then( () => transaction.get(key))
                 .then( function(result) {
