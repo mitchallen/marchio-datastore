@@ -387,6 +387,134 @@ describe('module factory smoke test', () => {
         });
     });
 
+    it('numeric false should have no effect', done => {
+        _factory.create({
+            projectId: GOOGLE_TEST_PROJECT,
+            model: _testModel,
+            numeric: false,
+            post: true,
+            get:  true
+        })
+        .then(function(app) {
+            _server = app.listen(TEST_PORT, () => {
+                   // console.log(`listening on port ${TEST_PORT}`);   
+            });
+            killable(_server);
+            return Promise.resolve(true);
+        })
+        .then( () => {
+
+            var testObject = {
+                email: "test" + getRandomInt( 1000, 1000000) + "@smoketest.cloud",
+                password: "fubar"
+            };
+
+            // console.log(`TEST HOST: ${_testHost} `);
+
+            // SETUP - need to post at least one record
+            request(_testHost)
+                .post(_postUrl)
+                .send(testObject)
+                .set('Content-Type', 'application/json')
+                .expect(201)
+                .end(function (err, res) {
+                    should.not.exist(err);
+                    should.exist(res);
+                    should.not.exist(err);
+                    // console.log(res.body);
+                    res.body.email.should.eql(testObject.email);
+                    res.body.status.should.eql("NEW");
+                    should.exist(res.body._id);
+                    // GET
+                    var _recordId = res.body._id; 
+                    var _getUrl = `/${_testModel.name}/${_recordId}`;
+                    // console.log("GET URL: ", _getUrl);
+                    request(_testHost)
+                        .get(_getUrl)
+                        .expect(200)
+                        .end(function (err, res) {
+                            should.not.exist(err);
+                            // console.log(res.body);
+                            res.body.email.should.eql(testObject.email);
+                            // // Should not return password
+                            should.not.exist(res.body.password);
+                            res.body.status.should.eql("NEW");
+                            should.exist(res.body._id);
+                            done();;
+                        });
+                });
+
+        })
+        .catch( function(err) { 
+            console.error(err); 
+            done(err);  // to pass on err, remove err (done() - no arguments)
+        });
+    });
+
+    it('numeric true should have no effect', done => {
+        _factory.create({
+            projectId: GOOGLE_TEST_PROJECT,
+            model: _testModel,
+            numeric: true,
+            post: true,
+            get:  true
+        })
+        .then(function(app) {
+            _server = app.listen(TEST_PORT, () => {
+                   // console.log(`listening on port ${TEST_PORT}`);   
+            });
+            killable(_server);
+            return Promise.resolve(true);
+        })
+        .then( () => {
+
+            var testObject = {
+                email: "test" + getRandomInt( 1000, 1000000) + "@smoketest.cloud",
+                password: "fubar"
+            };
+
+            // console.log(`TEST HOST: ${_testHost} `);
+
+            // SETUP - need to post at least one record
+            request(_testHost)
+                .post(_postUrl)
+                .send(testObject)
+                .set('Content-Type', 'application/json')
+                .expect(201)
+                .end(function (err, res) {
+                    should.not.exist(err);
+                    should.exist(res);
+                    should.not.exist(err);
+                    // console.log(res.body);
+                    res.body.email.should.eql(testObject.email);
+                    res.body.status.should.eql("NEW");
+                    should.exist(res.body._id);
+                    // GET
+                    var _recordId = res.body._id; 
+                    var _getUrl = `/${_testModel.name}/${_recordId}`;
+                    // console.log("GET URL: ", _getUrl);
+                    request(_testHost)
+                        .get(_getUrl)
+                        .expect(200)
+                        .end(function (err, res) {
+                            should.not.exist(err);
+                            // console.log(res.body);
+                            res.body.email.should.eql(testObject.email);
+                            // // Should not return password
+                            should.not.exist(res.body.password);
+                            res.body.status.should.eql("NEW");
+                            should.exist(res.body._id);
+                            done();;
+                        });
+                });
+
+        })
+        .catch( function(err) { 
+            console.error(err); 
+            done(err);  // to pass on err, remove err (done() - no arguments)
+        });
+    });
+
     it('get for a non-existent id should return 404', done => {
         _factory.create({
             projectId: GOOGLE_TEST_PROJECT,

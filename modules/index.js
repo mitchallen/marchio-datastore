@@ -194,7 +194,8 @@ module.exports.create = ( spec ) => {
                 projectId = coreObject.projectId,
                 middleware = coreObject.use,
                 ds = coreObject.ds,
-                numeric = spec.numeric === undefined ? true : spec.numeric,
+                // Do NOT use numeric - keys are auto-generated numbers, will mess up get calls
+                // numeric = spec.numeric === undefined ? true : spec.numeric,
                 app = coreObject.app,   
                 path = coreObject.path,
                 post = spec.post || false,
@@ -211,7 +212,8 @@ module.exports.create = ( spec ) => {
 
                 return { 
                     projectId: projectId, model: model, 
-                    numeric: numeric,
+                    // Do NOT use numeric - keys are auto-generated numbers, will mess up get calls
+                    // numeric: numeric,
                     preprocess: rParams.preprocess ? rParams.preprocess : null 
                 };
             };
