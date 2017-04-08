@@ -22,6 +22,7 @@ module.exports.create = ( spec ) => {
                 projectId = coreObject.projectId,
                 middleware = coreObject.use,
                 preprocess = coreObject.preprocess,
+                numeric = spec.numeric === undefined ? true : spec.numeric,
                 ds = coreObject.ds,
                 app = coreObject.app;
 

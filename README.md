@@ -280,6 +280,10 @@ Add unit tests for any new or changed functionality. Lint and test your code.
 
 ## Version History
 
+#### Version 0.1.18
+
+* Updated to use latest marchio-core-app
+
 #### Version 0.1.17
 
 * Now uses external marchio-core-record
