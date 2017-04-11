@@ -12,6 +12,7 @@
     "test-nodemon": "nodemon /usr/local/bin/mocha --timeout 5000",
     "test-debug": "nodemon /usr/local/bin/mocha -g '@DEBUG' --recursive --timeout 20000",
     "test-jenkins": "grunt && /usr/local/bin/mocha --recursive --timeout 20000 -R xunit test/ > test-reports.xml",
+    "smoke-test": "grunt && /usr/local/bin/mocha --recursive --timeout 20000 test/smoke-test.js",
     "web-server": "python -m SimpleHTTPServer $PORT || 8000"
   },
   "repository": {

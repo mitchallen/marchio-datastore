@@ -266,6 +266,9 @@ describe('module factory smoke test', () => {
                 .send(testObject)
                 .set('Content-Type', 'application/json')
                 .expect(201)
+                .expect('Content-Type', /json/)
+                .expect('Location', /datastore-test\/\d{16}/ )
+                // .expect('Location', /\d{16}/ )
                 .end(function (err, res) {
                     should.not.exist(err);
                     // console.log(res.body);
@@ -274,7 +277,8 @@ describe('module factory smoke test', () => {
                     should.not.exist(res.body.password);
                     res.body.status.should.eql("NEW");
                     should.exist(res.body._id);
-                    done();;
+                    res.header.location.should.eql(`/${_testModel.name}/${res.body._id}`)
+                    done();
                 });
 
         })
@@ -353,6 +357,8 @@ describe('module factory smoke test', () => {
                 .send(testObject)
                 .set('Content-Type', 'application/json')
                 .expect(201)
+                .expect('Content-Type', /json/)
+                .expect('Location', /datastore-test\/\d{16}/ )
                 .end(function (err, res) {
                     should.not.exist(err);
                     should.exist(res);
@@ -365,9 +371,11 @@ describe('module factory smoke test', () => {
                     var _recordId = res.body._id; 
                     var _getUrl = `/${_testModel.name}/${_recordId}`;
                     // console.log("GET URL: ", _getUrl);
+                    res.header.location.should.eql(_getUrl);
                     request(_testHost)
                         .get(_getUrl)
                         .expect(200)
+                        .expect('Location', _getUrl )
                         .end(function (err, res) {
                             should.not.exist(err);
                             // console.log(res.body);
@@ -376,7 +384,7 @@ describe('module factory smoke test', () => {
                             should.not.exist(res.body.password);
                             res.body.status.should.eql("NEW");
                             should.exist(res.body._id);
-                            done();;
+                            done();
                         });
                 });
 
@@ -417,6 +425,8 @@ describe('module factory smoke test', () => {
                 .send(testObject)
                 .set('Content-Type', 'application/json')
                 .expect(201)
+                .expect('Content-Type', /json/)
+                .expect('Location', /datastore-test\/\d{16}/ )
                 .end(function (err, res) {
                     should.not.exist(err);
                     should.exist(res);
@@ -432,6 +442,8 @@ describe('module factory smoke test', () => {
                     request(_testHost)
                         .get(_getUrl)
                         .expect(200)
+                        .expect('Content-Type', /json/)
+                        .expect('Location', _getUrl )
                         .end(function (err, res) {
                             should.not.exist(err);
                             // console.log(res.body);
@@ -440,7 +452,7 @@ describe('module factory smoke test', () => {
                             should.not.exist(res.body.password);
                             res.body.status.should.eql("NEW");
                             should.exist(res.body._id);
-                            done();;
+                            done();
                         });
                 });
 
@@ -481,6 +493,8 @@ describe('module factory smoke test', () => {
                 .send(testObject)
                 .set('Content-Type', 'application/json')
                 .expect(201)
+                .expect('Content-Type', /json/)
+                .expect('Location', /datastore-test\/\d{16}/ )
                 .end(function (err, res) {
                     should.not.exist(err);
                     should.exist(res);
@@ -496,6 +510,7 @@ describe('module factory smoke test', () => {
                     request(_testHost)
                         .get(_getUrl)
                         .expect(200)
+                        .expect('Location', _getUrl )
                         .end(function (err, res) {
                             should.not.exist(err);
                             // console.log(res.body);
@@ -632,6 +647,8 @@ describe('module factory smoke test', () => {
                 .send(testObject)
                 .set('Content-Type', 'application/json')
                 .expect(201)
+                .expect('Content-Type', /json/)
+                .expect('Location', /datastore-test\/\d{16}/ )
                 .end(function (err, res) {
                     should.not.exist(err);
                     should.exist(res);
@@ -650,6 +667,7 @@ describe('module factory smoke test', () => {
                         .send({ email: testObject.email, status: "UPDATED" })
                         // .send({ status: "UPDATED" })
                         .set('Content-Type', 'application/json')
+                        .expect('Location', _putUrl )
                         .expect(204)    // No content returned
                         .end(function (err, res) {
                             should.not.exist(err);
@@ -671,7 +689,7 @@ describe('module factory smoke test', () => {
                                     res.body.password.should.eql(testObject.password);
                                     res.body.status.should.eql("UPDATED");
                                     should.exist(res.body._id);
-                                    done();;
+                                    done();
                                 });
                         });
                 });
@@ -756,7 +774,6 @@ describe('module factory smoke test', () => {
             request(_testHost)
                 .put(_putUrl)
                 .send({ email: testObject.email, status: "UPDATED" })
-                // .send({ status: "UPDATED" })
                 .set('Content-Type', 'application/json')
                 .expect(404)    // No content returned
                 .end(function (err, res) {
@@ -801,6 +818,8 @@ describe('module factory smoke test', () => {
                 .send(testObject)
                 .set('Content-Type', 'application/json')
                 .expect(201)
+                .expect('Content-Type', /json/)
+                .expect('Location', /datastore-test\/\d{16}/ )
                 .end(function (err, res) {
                     should.not.exist(err);
                     should.exist(res);
@@ -960,6 +979,8 @@ describe('module factory smoke test', () => {
                 .send(testObject)
                 .set('Content-Type', 'application/json')
                 .expect(201)
+                .expect('Content-Type', /json/)
+                .expect('Location', /datastore-test\/\d{16}/ )
                 .end(function (err, res) {
                     should.not.exist(err);
                     should.exist(res);
