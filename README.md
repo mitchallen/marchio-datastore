@@ -280,6 +280,10 @@ Add unit tests for any new or changed functionality. Lint and test your code.
 
 ## Version History
 
+#### Version 0.1.20
+
+* HTTP DELETE now returns a status of 204 instead of 200 because it doesn't return a response body.
+
 #### Version 0.1.19
 
 * The __numeric__ flag is ignored since post always auto-generates numeric keys

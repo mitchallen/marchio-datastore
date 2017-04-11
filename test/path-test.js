@@ -544,7 +544,7 @@ describe('path based', () => {
                     // console.log("DEL URL: ", _delUrl);
                     request(_testHost)
                         .del(_delUrl)
-                        .expect(200)
+                        .expect(204)
                         .end(function (err, res) {
                             should.not.exist(err);
                             // GET (make sure it's gone - expect 404)
@@ -569,7 +569,7 @@ describe('path based', () => {
         });
     });
 
-    it('delete for a non-existent id should return 200', done => {
+    it('delete for a non-existent id should return 204', done => {
         _factory.create({
             projectId: GOOGLE_TEST_PROJECT,
             model: _testModel,
@@ -600,7 +600,7 @@ describe('path based', () => {
             // console.log("DEL URL: ", _delUrl);
             request(_testHost)
                 .del(_delUrl)
-                .expect(200)
+                .expect(204)
                 .end(function (err, res) {
                     should.not.exist(err);
                     done();

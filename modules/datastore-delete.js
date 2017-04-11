@@ -27,12 +27,12 @@ module.exports.create = ( spec ) => {
 
                 var eMsg = '';
 
-                const dbId = req.params._id;  // set by validateParams
+                const dbId = req.params._id;  
 
                 ds.delete(ds.key([ model.name, dbId ]))
                 .then((results) => {
                     res
-                        .status(200)    
+                        .status(204)    
                         .end();
                     return next();
 
