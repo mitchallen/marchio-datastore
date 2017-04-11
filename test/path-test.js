@@ -111,6 +111,8 @@ describe('path based', () => {
                 .send(testObject)
                 .set('Content-Type', 'application/json')
                 .expect(201)
+                .expect('Content-Type', /json/)
+                .expect('Location', /datastore-test\/\d{16}/ )
                 .end(function (err, res) {
                     should.not.exist(err);
                     // console.log(res.body);
@@ -202,6 +204,8 @@ describe('path based', () => {
                 .send(testObject)
                 .set('Content-Type', 'application/json')
                 .expect(201)
+                .expect('Content-Type', /json/)
+                .expect('Location', /datastore-test\/\d{16}/ )
                 .end(function (err, res) {
                     should.not.exist(err);
                     should.exist(res);
@@ -214,9 +218,12 @@ describe('path based', () => {
                     var _recordId = res.body._id; 
                     var _getUrl = `${_path}/${_testModel.name}/${_recordId}`;
                     // console.log("GET URL: ", _getUrl);
+                    res.header['location'].should.eql(_getUrl);
                     request(_testHost)
                         .get(_getUrl)
                         .expect(200)
+                        .expect('Content-Type', /json/)
+                        .expect('Location', _getUrl )
                         .end(function (err, res) {
                             should.not.exist(err);
                             // console.log(res.body);
@@ -375,6 +382,7 @@ describe('path based', () => {
                         // .send({ status: "UPDATED" })
                         .set('Content-Type', 'application/json')
                         .expect(204)    // No content returned
+                        .expect('Location', _putUrl )
                         .end(function (err, res) {
                             should.not.exist(err);
                             // console.log('Location:', res.header['location'] );
@@ -561,7 +569,6 @@ describe('path based', () => {
                                 });
                         });
                 });
-
         })
         .catch( function(err) { 
             console.error(err); 
@@ -605,8 +612,6 @@ describe('path based', () => {
                     should.not.exist(err);
                     done();
                 });
-   
-
         })
         .catch( function(err) { 
             console.error(err); 
@@ -709,6 +714,7 @@ describe('path based', () => {
                         .send( testPatch )
                         .set('Content-Type', 'application/json')
                         .expect(204)  
+                        .expect('Location', _patchUrl )
                         .end(function (err, res) {
                             should.not.exist(err);
                             // console.log('Location:', res.header['location'] );
